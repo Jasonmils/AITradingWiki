@@ -7,6 +7,8 @@ set -e
 # Usage: bash onboarding.sh <vault-path>
 # Output: JSON summary to stdout. Progress messages to stderr.
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+TEMPLATE_SOURCE="$SCRIPT_DIR/../../../templates"
 VAULT_ROOT="${1:-.}"
 
 echo "=== Second Brain Onboarding ===" >&2
@@ -17,10 +19,42 @@ mkdir -p "$VAULT_ROOT/raw/assets"
 mkdir -p "$VAULT_ROOT/wiki/sources"
 mkdir -p "$VAULT_ROOT/wiki/entities"
 mkdir -p "$VAULT_ROOT/wiki/concepts"
+mkdir -p "$VAULT_ROOT/wiki/events"
+mkdir -p "$VAULT_ROOT/wiki/models"
 mkdir -p "$VAULT_ROOT/wiki/synthesis"
+mkdir -p "$VAULT_ROOT/templates"
 mkdir -p "$VAULT_ROOT/output"
 
-# 2. Create wiki/index.md if it doesn't exist
+# 2. Copy canonical templates without overwriting any existing path
+TEMPLATES=(
+  source.md
+  entity.md
+  event.md
+  model.md
+  investment-thesis.md
+  monitoring.md
+)
+
+if [ -d "$TEMPLATE_SOURCE" ]; then
+  for template in "${TEMPLATES[@]}"; do
+    source_template="$TEMPLATE_SOURCE/$template"
+    target_template="$VAULT_ROOT/templates/$template"
+
+    if [ ! -f "$source_template" ]; then
+      echo "Missing canonical template: $source_template" >&2
+      exit 1
+    fi
+
+    if [ -e "$target_template" ] || [ -L "$target_template" ]; then
+      echo "templates/$template already exists, skipping" >&2
+    else
+      cp "$source_template" "$target_template"
+      echo "Created templates/$template" >&2
+    fi
+  done
+fi
+
+# 3. Create wiki/index.md if it doesn't exist
 if [ ! -f "$VAULT_ROOT/wiki/index.md" ]; then
   cat > "$VAULT_ROOT/wiki/index.md" << 'EOF'
 # Index
@@ -33,14 +67,22 @@ Master catalog of all wiki pages. Updated on every ingest.
 
 ## Concepts
 
+## Events
+
+## Models
+
 ## Synthesis
+
+## Active Theses
+
+## Monitoring
 EOF
   echo "Created wiki/index.md" >&2
 else
   echo "wiki/index.md already exists, skipping" >&2
 fi
 
-# 3. Create wiki/log.md if it doesn't exist
+# 4. Create wiki/log.md if it doesn't exist
 if [ ! -f "$VAULT_ROOT/wiki/log.md" ]; then
   cat > "$VAULT_ROOT/wiki/log.md" << 'EOF'
 # Log
@@ -53,7 +95,7 @@ else
   echo "wiki/log.md already exists, skipping" >&2
 fi
 
-# 4. Check tooling
+# 5. Check tooling
 echo "" >&2
 echo "Checking tooling..." >&2
 
@@ -87,7 +129,7 @@ check_tool "agent-browser" "agent-browser" "npm i -g agent-browser && agent-brow
 echo "" >&2
 echo "Onboarding complete." >&2
 
-# 5. Output JSON result to stdout
+# 6. Output JSON result to stdout
 VAULT_ABS=$(cd "$VAULT_ROOT" && pwd)
 cat << JSONEOF
 {
@@ -100,12 +142,21 @@ cat << JSONEOF
     "wiki/sources/",
     "wiki/entities/",
     "wiki/concepts/",
+    "wiki/events/",
+    "wiki/models/",
     "wiki/synthesis/",
+    "templates/",
     "output/"
   ],
   "files": [
     "wiki/index.md",
-    "wiki/log.md"
+    "wiki/log.md",
+    "templates/source.md",
+    "templates/entity.md",
+    "templates/event.md",
+    "templates/model.md",
+    "templates/investment-thesis.md",
+    "templates/monitoring.md"
   ],
   "tools": $TOOLS_JSON
 }

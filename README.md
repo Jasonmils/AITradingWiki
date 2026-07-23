@@ -1,5 +1,7 @@
 # Second Brain
 
+[中文使用指南](README.zh-CN.md)
+
 An LLM-maintained personal knowledge base built on the [LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). Drop raw sources into a folder, let the LLM compile them into a structured wiki, and browse it all in Obsidian.
 
 ![Second Brain Overview](docs/assets/second-brain-overview.png)
@@ -26,20 +28,39 @@ This installs four skills into your AI agent (Claude Code, Codex, Cursor, Gemini
 
 | Skill | What it does |
 |---|---|
-| `/second-brain` | Set up a new vault (guided wizard) |
-| `/second-brain-ingest` | Process raw sources into wiki pages |
-| `/second-brain-query` | Ask questions against your wiki |
-| `/second-brain-lint` | Health-check the wiki |
+| `$second-brain` | Set up a new vault (guided wizard) |
+| `$second-brain-ingest` | Process raw sources into wiki pages |
+| `$second-brain-query` | Ask questions against your wiki |
+| `$second-brain-lint` | Health-check the wiki |
+
+This Codex-native investment-research checkout adds a fifth repository skill:
+
+| Skill | What it does |
+|---|---|
+| `$equity-research` | Build or update one listed security's evidence-grounded research dossier |
+
+### Codex-native local checkout
+
+When this repository itself is the vault, run the idempotent setup script after cloning:
+
+```bash
+bash scripts/setup_codex.sh
+```
+
+This initializes `raw/`, the expanded investment-research `wiki/`, `templates/`, and `output/`,
+then exposes five project skills at
+`.agents/skills/`, where Codex discovers repository-scoped skills. Start a new Codex task
+from the repository root after setup so the skills appear in the skill picker.
 
 ## Quick Start
 
 1. **Install the skills** (see above)
-2. **Run the wizard:** type `/second-brain` in your AI agent — it walks you through naming, location, domain, and tooling
+2. **Run the wizard:** invoke `$second-brain` in Codex — it walks you through naming, location, domain, and tooling
 3. **Install Web Clipper:** [Obsidian Web Clipper](https://chromewebstore.google.com/detail/obsidian-web-clipper/cnjifjpddelmedmihgijeibhnjfabmlf) — configure it to save to your vault's `raw/` folder
 4. **Open in Obsidian** — launch Obsidian, choose "Open folder as vault", select your vault folder
-5. **Clip your first article** to `raw/`, then run `/second-brain-ingest` — the LLM will discuss key takeaways and build wiki pages
+5. **Clip your first article** to `raw/`, then invoke `$second-brain-ingest` — the LLM will discuss key takeaways and build wiki pages
 6. **Browse your wiki** in Obsidian — follow `[[wikilinks]]`, explore the graph view, check `wiki/index.md`
-7. **Keep going** — `/second-brain-query` to ask questions, `/second-brain-lint` to health-check
+7. **Keep going** — `$second-brain-query` to ask questions, `$equity-research` for a complete security dossier, and `$second-brain-lint` to health-check
 
 ## What You Get
 
@@ -51,11 +72,14 @@ your-vault/
 │   ├── sources/            # One summary per ingested source
 │   ├── entities/           # People, orgs, products, tools
 │   ├── concepts/           # Ideas, frameworks, theories
+│   ├── events/             # Dated earnings, orders, transactions, and milestones
+│   ├── models/             # Forecasts, valuation, scenarios, and sensitivities
 │   ├── synthesis/          # Comparisons, analyses, themes
 │   ├── index.md            # Master catalog of all pages
 │   └── log.md              # Chronological operation record
+├── templates/              # Canonical empty wiki page structures
 ├── output/                 # Reports and generated artifacts
-└── CLAUDE.md               # Agent config (varies by agent)
+└── AGENTS.md               # Codex project guidance (varies by agent)
 ```
 
 ## Optional Tools
@@ -69,16 +93,16 @@ The wizard offers to install these. All optional but recommended:
 ## FAQ
 
 **The wizard failed or I need to re-run setup.**
-Run `/second-brain` again — the onboarding script is idempotent. It won't overwrite existing files, so your data is safe. If you need a fresh start, delete the vault folder and re-run.
+Invoke `$second-brain` again — the onboarding script is idempotent. It won't overwrite existing files, so your data is safe. If you need a fresh start, delete the vault folder and re-run.
 
 **I accidentally modified a file in `raw/`.**
-That's OK. The wiki was built from the original content. If you need the original back, check your git history (if the vault is a git repo) or re-clip the source. The wiki pages are unaffected.
+Restore the original immediately from Git history or re-clip the source, and do not continue editing it. Files in `raw/` are immutable evidence. If the restored file differs from the version previously ingested, treat it as a new dated source and review the affected wiki pages.
 
 **`wiki/index.md` is out of sync with actual pages.**
-Run `/second-brain-lint` — it checks index consistency and offers to fix mismatches.
+Invoke `$second-brain-lint` — it checks index consistency and offers to fix mismatches.
 
 **Wikilinks are broken after renaming a page.**
-Run `/second-brain-lint` — it scans for broken `[[wikilinks]]` and reports which files need updating.
+Invoke `$second-brain-lint` — it scans for broken `[[wikilinks]]` and reports which files need updating.
 
 **The wiki is getting large and queries are slow.**
 Install `qmd` (`npm i -g @tobilu/qmd`). The query skill uses it automatically when available. It provides fast hybrid search across your wiki files.

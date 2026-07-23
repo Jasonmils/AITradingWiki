@@ -1,141 +1,287 @@
-# Wiki Schema
+# AI Trading Wiki Schema
 
-Canonical rules for LLM-maintained knowledge base wikis. This is the single source of truth — agent config templates pull from this document.
+This is the canonical schema for the investment-research vault. Apply it when creating, updating, querying, or auditing wiki pages.
+
+## Contents
+
+1. Architecture
+2. Canonical metadata
+3. Evidence classification
+4. Page responsibilities
+5. Entity Hub and research coverage
+6. Event rules
+7. Model rules
+8. Investment thesis rules
+9. Index and log
+10. Staleness, conflicts, and invalidation
 
 ## Architecture
 
-Three directories, three roles:
+Maintain the research chain:
 
-- **raw/** — immutable source documents. The LLM reads from here but NEVER modifies these files.
-- **wiki/** — the LLM's workspace. Create, update, and maintain all files here.
-- **output/** — reports, query results, and generated artifacts go here.
+> Evidence → Object → Mechanism → Event → Model → Investment Judgment
 
-Wiki subdirectories:
-- `wiki/sources/` — one summary page per ingested source
-- `wiki/entities/` — pages for people, organizations, products, tools
-- `wiki/concepts/` — pages for ideas, frameworks, theories, patterns
-- `wiki/synthesis/` — comparisons, analyses, cross-cutting themes
+- `raw/`: immutable source documents. Read but never edit, move, rename, or delete them.
+- `raw/assets/`: immutable images and attachments referenced by sources.
+- `wiki/sources/`: factual summaries of individual sources.
+- `wiki/entities/`: normalized companies, securities, subsidiaries, people, customers, suppliers, products, and tools.
+- `wiki/concepts/`: reusable mechanisms, technologies, metrics, risks, and frameworks.
+- `wiki/events/`: dated changes such as earnings, orders, certifications, mergers, control changes, asset injections, financing, and regulation.
+- `wiki/models/`: forecasts, valuation, scenarios, sensitivities, and explicit assumptions.
+- `wiki/synthesis/`: theses, comparisons, judgments, monitoring, and post-mortems.
+- `templates/`: empty canonical page structures.
+- `output/`: non-canonical reports and generated artifacts.
 
-Two special files:
-- `wiki/index.md` — master catalog of every wiki page, organized by category. Update on every ingest.
-- `wiki/log.md` — append-only chronological record. Never edit existing entries.
+Do not organize top-level directories by market, asset view, or horizon. Represent those attributes in metadata.
 
-## Page Format
+## Canonical metadata
 
-Every wiki page MUST include YAML frontmatter:
+Every wiki page must include:
 
-    ---
-    tags: [tag1, tag2]
-    sources: [source-filename-1.md, source-filename-2.md]
-    created: YYYY-MM-DD
-    updated: YYYY-MM-DD
-    ---
+```yaml
+---
+page_type: source | entity | concept | event | model | synthesis
+subject: ""
+tags: []
+tickers: []
+markets: []
+asset_classes: []
+industries: []
+themes: []
+as_of: YYYY-MM-DD
+sources: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+---
+```
 
-Use `[[wikilink]]` syntax for all internal links. When you mention a concept, entity, or source that has its own page, link it.
+Use `ticker_aliases: []` when a security has common alternative identifiers. Normalize primary tickers with an exchange prefix, for example:
 
-## Operations
+```text
+SZSE:300767
+SSE:600519
+HKEX:0700
+NASDAQ:NVDA
+```
 
-### Ingest (processing a new source)
+Models, investment theses, monitoring pages, and other current judgments also require:
 
-When the user adds a file to raw/ and asks you to process it:
+```yaml
+status: draft | provisional | active | superseded | invalidated
+confidence: low | medium | high
+horizon: 1-3m | 6-12m | 12-24m | 3-5y
+review_after: YYYY-MM-DD
+```
 
-1. Read the source completely
-2. Discuss key takeaways with the user
-3. Create a source summary page in `wiki/sources/` with: title, source metadata, key claims, and a structured summary
-4. Identify all entities and concepts mentioned. For each:
-   - If a wiki page exists: update it with new information from this source, noting the source
-   - If no wiki page exists: create one in the appropriate subdirectory
-5. Add `[[wikilinks]]` between all related pages
-6. Update `wiki/index.md` with any new pages
-7. Append to `wiki/log.md`: `## [YYYY-MM-DD] ingest | Source Title`
+- `updated`: last file edit date.
+- `as_of`: date through which the data or judgment is valid.
+- `review_after`: latest date by which re-verification is required.
+- `status`: lifecycle of the model or judgment.
 
-A single source may touch 10-15 wiki pages. That is normal.
+Preserve the date, reporting period, currency, units, and source for every financial or valuation number.
 
-### Query (answering questions)
+## Evidence classification
 
-When the user asks a question:
+Classify each material assertion as one of:
 
-1. Read `wiki/index.md` to find relevant pages
-2. Read the relevant wiki pages
-3. Synthesize an answer with `[[wikilink]]` citations to wiki pages
-4. If the answer produces a valuable artifact (comparison, analysis, new connection), offer to save it as a new page in `wiki/synthesis/`
-5. If you save a new page, update the index and log
+| Evidence Type | Meaning |
+|---|---|
+| `verified_fact` | Confirmed by primary or otherwise authoritative evidence |
+| `company_statement` | Company or management statement, target, or guidance |
+| `source_opinion` | Interpretation supplied by a source author |
+| `market_consensus` | Identified market or analyst consensus |
+| `non_consensus` | Evidence-based view that differs from consensus |
+| `market_rumor` | Unconfirmed market report or hearsay |
+| `model_assumption` | Explicit input used in a forecast or valuation |
+| `codex_inference` | Reasoning derived by Codex from cited evidence |
+| `disputed` | Materially conflicting or contested claims |
 
-### Lint (health check)
+Use an assertion table for material claims:
 
-When the user asks you to lint or health-check the wiki:
+```markdown
+| Assertion | Evidence Type | As Of | Evidence | Confidence | Invalidation Condition |
+|---|---|---|---|---|---|
+|  | verified_fact | YYYY-MM-DD | [[Source Page]] | high |  |
+```
 
-1. Scan for contradictions between pages
-2. Find stale claims that newer sources have superseded
-3. Identify orphan pages (no inbound links)
-4. Find important concepts mentioned but lacking their own page
-5. Check for missing cross-references
-6. Suggest data gaps that could be filled with a web search
-7. Report findings and offer to fix issues
-8. Log the lint pass: `## [YYYY-MM-DD] lint | Summary of findings`
+Never convert management guidance, source opinion, rumor, or a model assumption into a verified fact. Keep the following milestones separate unless every transition is independently supported:
 
-## Index Format
+> Supply-chain entry → technical certification → formal order → delivery → recognized revenue → profit and cash flow
 
-Each entry in `wiki/index.md` is one line:
+## Page responsibilities
 
-    - [[Page Name]] — one-line summary
+### Source
 
-Organized under category headers: Sources, Entities, Concepts, Synthesis.
+Record only what one source explicitly states:
 
-## Log Format
+- source metadata and publication date;
+- factual summary and key assertions;
+- entities, concepts, events, and assumptions mentioned;
+- evidence type for material claims;
+- gaps, conflicts, and limitations.
 
-Each entry in `wiki/log.md`:
+Do not add an independent investment conclusion to a Source page.
 
-    ## [YYYY-MM-DD] operation | Title
-    Brief description of what was done.
+### Entity
 
-## Page Naming
+Create a canonical research object for a company, security, subsidiary, person, customer, supplier, product, or tool. Prefer updating an existing Entity over creating aliases. A listed-company Entity should act as an Entity Hub.
 
-Filenames use **kebab-case** with `.md` extension. Page titles inside the file use **Title Case**.
+### Concept
 
-- Source pages: `wiki/sources/article-title-here.md` → `# Article Title Here`
-- Entity pages: `wiki/entities/entity-name.md` → `# Entity Name`
-- Concept pages: `wiki/concepts/concept-name.md` → `# Concept Name`
-- Synthesis pages: `wiki/synthesis/comparison-topic.md` → `# Comparison Topic`
+Store reusable mechanisms such as industry structure, technology routes, inventory cycles, operating leverage, accounting issues, or risk frameworks. Keep company-specific conclusions in Entity or Synthesis pages.
 
-When creating `[[wikilinks]]`, use the page title (Title Case), not the filename:
-- Correct: `[[Entity Name]]`
-- Wrong: `[[entity-name]]`
+### Event
 
-To slugify a title into a filename: lowercase, replace spaces with hyphens, remove special characters, trim to reasonable length.
+Store a dated change with a lifecycle, evidence, expected milestones, and investment relevance. Use Event pages for earnings, orders, certifications, mergers, control changes, asset injections, financing, and regulatory changes.
 
-## Image Handling
+### Model
 
-Web-clipped articles often include images. Handle them as follows:
+Store historical inputs, assumptions, forecasts, valuation, scenarios, and sensitivities. Distinguish reported facts, company guidance, and Codex assumptions.
 
-1. **Download images locally.** In Obsidian Settings → Files and links, set "Attachment folder path" to `raw/assets/`. Then use "Download attachments for current file" (bind it to a hotkey like Ctrl+Shift+D) after clipping an article.
-2. **Reference images from wiki pages** using standard markdown: `![description](../raw/assets/image-name.png)`. Keep the image in `raw/assets/` — never copy images into `wiki/`.
-3. **During ingestion**, note any images in the source. If an image contains important information (diagrams, charts, data), describe its contents in the wiki page so the knowledge is captured in text form.
+### Synthesis
 
-## Lint Frequency
+Store cross-source judgments: investment theses, company or industry comparisons, monitoring pages, and post-mortems. Cite the underlying Source, Entity, Concept, Event, and Model pages.
 
-Run a lint pass (`/second-brain-lint`) on this schedule:
-- **After every 10 ingests** — catches cross-reference gaps while they're fresh
-- **Monthly at minimum** — catches stale claims and orphan pages that accumulate over time
-- **Before any major query or synthesis** — ensures the wiki is healthy before you rely on it for analysis
+Create a standalone page only when the object is likely to be queried repeatedly or is material to an investment thesis.
 
-## Tools
+## Entity Hub and research coverage
 
-You have access to these CLI tools — use them when appropriate:
+For each covered security, maintain one Entity Hub that links to relevant Events, Models, Syntheses, and monitoring pages.
 
-- **summarize** — summarize links, files, and media. Run `summarize --help` for usage.
-- **qmd** — local search engine for markdown files. Run `qmd --help` for usage. Use when the wiki grows beyond what index.md can efficiently navigate.
-- **agent-browser** — browser automation for web research. Use when web_search or web_fetch fail.
+Include a coverage table:
 
-## Rules
+```markdown
+| Research Module | Status | As Of | Main Gap |
+|---|---|---|---|
+| Company and security | complete | YYYY-MM-DD |  |
+| Ownership and governance | partial | YYYY-MM-DD |  |
+| Business segments | unverified | YYYY-MM-DD |  |
+| Industry and competition | unverified | YYYY-MM-DD |  |
+| Products and technology | unverified | YYYY-MM-DD |  |
+| Customers and suppliers | unverified | YYYY-MM-DD |  |
+| Historical financials and cash flow | unverified | YYYY-MM-DD |  |
+| Financial model | provisional | YYYY-MM-DD |  |
+| Valuation | stale | YYYY-MM-DD |  |
+| Investment thesis | draft | YYYY-MM-DD |  |
+```
 
-1. Never modify files in `raw/`. They are immutable source material.
-2. Always update `wiki/index.md` when you create or delete a page.
-3. Always append to `wiki/log.md` when you perform an operation.
-4. Use `[[wikilinks]]` for all internal references. Never use raw file paths in page content.
-5. Every wiki page must have YAML frontmatter with tags, sources, created, and updated fields.
-6. When new information contradicts existing wiki content, update the wiki page and note the contradiction with both sources cited.
-7. Keep source summary pages factual. Save interpretation and synthesis for concept and synthesis pages.
-8. When asked a question, search the wiki first. Only go to raw sources if the wiki doesn't have the answer.
-9. Prefer updating existing pages over creating new ones. Only create a new page when the topic is distinct enough to warrant it.
-10. Keep `wiki/index.md` concise — one line per page, under 120 characters per entry.
+Use coverage states such as `complete`, `partial`, `unverified`, `provisional`, and `stale`. Do not fill missing modules with speculation.
+
+## Event rules
+
+Event metadata must include:
+
+```yaml
+event_type: earnings | order | certification | merger | control_change | asset_injection | financing | regulatory | other
+event_status: announced | pending | completed | delayed | cancelled | disputed
+announcement_date: YYYY-MM-DD
+expected_date: YYYY-MM-DD
+effective_date:
+```
+
+Record:
+
+- what was announced and by whom;
+- which facts are verified and which are only statements or rumors;
+- the dated milestone sequence;
+- expected completion or next verification date;
+- investment relevance and invalidation conditions.
+
+Re-verify an Event when `review_after` passes or a milestone date arrives. Never infer that an announced transaction, certification, or order has completed.
+
+## Model rules
+
+Every material Model must cover, when applicable:
+
+- historical revenue and profit;
+- business segments;
+- volume and price assumptions;
+- gross margin;
+- research and development, selling, and administrative expenses;
+- operating cash flow;
+- accounts receivable and inventory;
+- capital expenditure;
+- consolidation date;
+- listed-company ownership percentage;
+- minority interests and attributable net profit;
+- share count and earnings per share;
+- net cash or net debt;
+- conservative, base, and optimistic scenarios;
+- valuation multiples and sensitivity analysis.
+
+For each input, record period, value, currency, units, evidence type, source, and confidence. Explicitly separate:
+
+- `verified_fact` from reported financial statements;
+- `company_statement` from management guidance;
+- `model_assumption` introduced for forecasting;
+- `codex_inference` used to connect evidence.
+
+Reconcile the Model with the latest reported results before using it. If reconciliation cannot be completed, mark the Model `provisional` or `stale` and report the gap.
+
+## Investment thesis rules
+
+Use this section order:
+
+1. Conclusion and knowledge cutoff
+2. Current company status
+3. Verified facts
+4. Market consensus
+5. Non-consensus view
+6. Codex inference
+7. Core debate
+8. Bull scenario
+9. Base scenario
+10. Bear scenario
+11. Catalysts and expected timing
+12. Principal risks
+13. Thesis invalidation conditions
+14. Monitoring indicators
+15. Valuation and tradability at the current price
+16. Evidence gaps and conflicting sources
+17. Thesis change log
+
+Separate:
+
+- industry attractiveness;
+- priority for further research;
+- tradability at the current price.
+
+Do not make a current-price judgment without re-verifying price, latest earnings, guidance, material orders, transaction progress, and regulatory status. If current verification is unavailable, state that the tradability conclusion cannot be completed.
+
+## Index and log
+
+`wiki/index.md` must include these sections:
+
+- Sources
+- Entities
+- Concepts
+- Events
+- Models
+- Synthesis
+- Active Theses
+- Monitoring
+
+Preserve existing entries. Each new entry should be one concise line and, where applicable, include ticker, page type, `as_of`, status, and a short description.
+
+Append every ingest, saved synthesis, dossier update, and lint operation to `wiki/log.md`:
+
+```markdown
+## [YYYY-MM-DD] operation | Title
+Brief description of pages created, updated, reviewed, or invalidated.
+```
+
+Never rewrite existing log entries.
+
+## Staleness, conflicts, and invalidation
+
+- Flag an `active` page as stale when `review_after` has passed.
+- Preserve superseded or invalidated models and theses for later review.
+- Add a dated change-log entry and links to the replacing page.
+- Keep conflicting claims side by side with evidence and use `disputed` when appropriate.
+- Never silently replace a historical value with a newer period.
+- Update Event status when milestones occur; do not leave completed, delayed, or cancelled events as pending.
+- Report missing, stale, conflicting, or rumor-only evidence instead of inventing a value.
+
+## Images
+
+Keep images in `raw/assets/`. When a chart or diagram is material, describe its evidence in text and cite the associated Source page. Never move or rewrite the original image.

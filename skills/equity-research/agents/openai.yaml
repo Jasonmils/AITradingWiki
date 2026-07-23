@@ -1,0 +1,4 @@
+interface:
+  display_name: "Equity Research"
+  short_description: "Build and update evidence-grounded stock dossiers"
+  default_prompt: "Use $equity-research to build or update a complete evidence-grounded stock research dossier."

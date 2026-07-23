@@ -1,16 +1,11 @@
 ---
 name: second-brain
-description: >
-  Set up a new Obsidian knowledge base with the LLM Wiki pattern. Use when
-  the user wants to create a second brain, initialize a vault, set up a
-  personal knowledge base, or says "onboard". Guides through an interactive
-  wizard to configure vault name, location, domain, agent support, and tooling.
-allowed-tools: Bash Read Write Glob Grep
+description: Set up or repair a Codex-managed Obsidian investment-research vault using the AI Trading Wiki schema. Use when the user asks to create or initialize a new investment second brain, onboard a new vault, or explicitly repair or reconfigure vault scaffolding. Do not use for ingesting sources, answering research questions, auditing an existing wiki, or building a security dossier.
 ---
 
 # Second Brain — Onboarding Wizard
 
-Set up a new Obsidian knowledge base using the LLM Wiki pattern. The LLM acts as librarian — reading raw sources, compiling them into a structured interlinked wiki, and maintaining it over time.
+Set up a new investment-research Obsidian vault using the AI Trading Wiki schema. Codex maintains the evidence-to-investment-judgment chain and Obsidian provides browsing, search, backlinks, and graph views.
 
 ## Wizard Flow
 
@@ -37,7 +32,7 @@ Accept any absolute or relative path. Resolve `~` to the user's home directory. 
 Ask:
 > "What's this knowledge base about? This helps me set up relevant tags and describe the vault's purpose."
 >
-> Examples: "AI research", "competitive intelligence on fintech startups", "personal health and fitness"
+> Examples: "global semiconductor equities", "China industrial automation stocks", "cross-market AI infrastructure"
 
 Accept free text. Use this to:
 - Write a one-line domain description for the agent config
@@ -83,7 +78,7 @@ Run the onboarding script, passing the full vault path:
 bash <skill-directory>/scripts/onboarding.sh <vault-path>
 ```
 
-This creates all directories and the initial `wiki/index.md` and `wiki/log.md` files.
+This creates `raw/`, the Source/Entity/Concept/Event/Model/Synthesis wiki directories, `templates/`, `output/`, and initial `wiki/index.md` and `wiki/log.md` files without overwriting existing content.
 
 ### 2. Generate agent config file(s)
 
@@ -133,7 +128,8 @@ Show the user:
 2. **Required next step** — install the Obsidian Web Clipper browser extension:
    > Install the Obsidian Web Clipper to easily save web articles into your vault:
    > https://chromewebstore.google.com/detail/obsidian-web-clipper/cnjifjpddelmedmihgijeibhnjfabmlf
-3. **How to start** — open the vault folder in Obsidian, clip an article to `raw/`, then run `/second-brain-ingest`
+3. **How to start** — open the vault folder in Obsidian, clip an article to `raw/`, then invoke `$second-brain-ingest`
+4. **How to research a security** — invoke `$equity-research` after relevant evidence has been ingested
 
 ## Reference Files
 
@@ -151,6 +147,7 @@ These files are bundled with this skill and available at `<skill-directory>/refe
 After setup is complete, the user's workflow is:
 
 1. **Clip articles** to `raw/` using the Obsidian Web Clipper
-2. **Ingest sources** with `/second-brain-ingest` — processes raw files into wiki pages
-3. **Ask questions** with `/second-brain-query` — searches and synthesizes from the wiki
-4. **Health-check** with `/second-brain-lint` — run after every 10 ingests or monthly
+2. **Ingest sources** with `$second-brain-ingest` — processes raw files into wiki pages
+3. **Ask questions** with `$second-brain-query` — searches and synthesizes from the wiki
+4. **Build a security dossier** with `$equity-research` — audits coverage, models scenarios, and evaluates tradability
+5. **Health-check** with `$second-brain-lint` — run after every 10 ingests, after earnings, or monthly

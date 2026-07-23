@@ -1,0 +1,4 @@
+interface:
+  display_name: "Second Brain Lint"
+  short_description: "Audit investment wiki structure and research integrity"
+  default_prompt: "Use $second-brain-lint to audit the investment wiki and report issues before fixing them."

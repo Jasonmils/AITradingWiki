@@ -1,76 +1,110 @@
 ---
 name: second-brain-query
-description: >
-  Answer questions against the knowledge base wiki. Use when the user
-  asks a question about their collected knowledge, wants to explore
-  connections between topics, says "what do I know about X", or wants
-  to search their wiki.
-allowed-tools: Bash Read Write Edit Glob Grep
+description: Answer questions from the existing wiki first with [[wikilink]] citations, evidence labels, as_of dates, conflicts, gaps, and current-data verification when needed. Use for factual questions, exploring connections, asking "我的知识库里…", reviewing an existing view, or comparing multiple securities or claims. Default to read-only. Use equity-research for a complete one-security dossier, thesis or model update, or current position decision; use second-brain-ingest for raw documents.
 ---
 
 # Second Brain — Query
 
-Answer questions by searching and synthesizing knowledge from the wiki.
+Answer from the existing knowledge base before using raw evidence or external research.
 
-## Search Strategy
+## Route the request
 
-### 1. Start with the index
+- Use this skill for wiki questions, connection exploration, existing-view summaries, and multi-security comparisons.
+- Route one-security initiation, a full dossier, thesis or model updates, and "buy or build a position now" decisions to `$equity-research`.
+- Route new raw documents to `$second-brain-ingest`.
+- Remain read-only unless the user later approves saving a synthesis.
 
-Read `wiki/index.md` to identify relevant pages. Scan all category sections (Sources, Entities, Concepts, Synthesis) for entries related to the question.
+## Parse the question
 
-### 2. Use qmd for large wikis
+Identify:
 
-If `qmd` is installed (check with `command -v qmd`), use it for search:
+- company or subject;
+- canonical ticker and market, if applicable;
+- requested investment horizon;
+- requested comparison dimensions;
+- whether the answer depends on current price or current facts.
 
-```bash
-qmd search "query terms" --path wiki/
-```
+Do not guess an ambiguous company or ticker. Ask for resolution when it materially changes the answer.
 
-This is especially useful when the wiki has grown beyond ~100 pages where scanning the index becomes inefficient.
+## Search sequence
 
-### 3. Read relevant pages
+1. Read `wiki/index.md`, including Sources, Entities, Concepts, Events, Models, Synthesis, Active Theses, and Monitoring.
+2. Find the security Entity Hub and inspect its research-coverage table.
+3. Flag missing, partial, unverified, stale, conflicting, and rumor-only modules.
+4. Retrieve evidence in this order:
+   - Source;
+   - Entity and Concept;
+   - Event;
+   - Model;
+   - Synthesis.
+5. Follow relevant `[[wikilinks]]`.
+6. Use `qmd search "<terms>" --path wiki/` when `qmd` is available and the index is insufficient.
+7. Read files in `raw/` only as a last resort, and never modify them.
 
-Read the wiki pages identified by the index or search. Follow `[[wikilinks]]` to pull in related context from linked pages. Read enough pages to give a thorough answer, but don't read the entire wiki.
+Read `../second-brain/references/wiki-schema.md` when evaluating evidence classifications, currentness, Models, or investment theses.
 
-### 4. Check raw sources if needed
+## Currentness gate
 
-If the wiki pages don't fully answer the question, check relevant source summaries in `wiki/sources/` for additional detail. Only go to files in `raw/` as a last resort.
+State the wiki knowledge cutoff. Re-verify time-sensitive claims when the question depends on:
 
-## Synthesize the Answer
+- current price or valuation;
+- latest earnings, guidance, or financial statements;
+- current orders, certification, delivery, or transaction progress;
+- current ownership, regulation, litigation, or management;
+- whether a security is tradable at the current price.
 
-### Format
+Prefer primary sources and record publication date, covered period, currency, units, and retrieval date. Keep external current facts separate from wiki facts. If current verification is unavailable, state that a current-price conclusion cannot be completed.
 
-Match the answer format to the question:
-- **Factual question** → direct answer with citations
-- **Comparison** → table or structured comparison
-- **Exploration** → narrative with linked concepts
-- **List/catalog** → bulleted list with brief descriptions
+## Synthesize
 
-### Citations
+Separate:
 
-Always cite wiki pages using `[[wikilink]]` syntax. Example:
+- `verified_fact`;
+- `company_statement`;
+- `source_opinion`;
+- `market_consensus`;
+- `non_consensus`;
+- `market_rumor`;
+- `model_assumption`;
+- `codex_inference`;
+- `disputed`.
 
-> According to [[Source - Article Title]], the key finding was X. This connects to the broader pattern described in [[Concept Name]], which [[Entity Name]] has also explored.
+For company or security questions, cover only the dimensions supported by evidence:
 
-### Offer to save valuable answers
+- company, security, ownership, and governance;
+- business segments and growth drivers;
+- industry structure and competition;
+- product, technology, customers, suppliers, and value-chain position;
+- historical financials, cash flow, receivables, inventory, and capital expenditure;
+- Models, valuation, and sensitivity;
+- catalysts, risks, monitoring indicators, and invalidation conditions.
 
-If the answer produces something worth keeping — a comparison, analysis, new connection, or synthesis — offer to save it:
+Distinguish industry attractiveness, research priority, and tradability at the current price.
 
-> "This comparison might be useful to keep in your wiki. Want me to save it as a synthesis page?"
+## Answer contract
 
-If the user agrees:
-1. Create a new page in `wiki/synthesis/` with proper frontmatter
-2. Add an entry to `wiki/index.md` under Synthesis
-3. Append to `wiki/log.md`: `## [YYYY-MM-DD] query | Question summary`
+Include:
 
-## Conventions
+1. Direct answer and knowledge cutoff.
+2. Wiki pages actually used, cited as `[[Page Title]]`.
+3. Evidence-classified findings.
+4. Conflicts, stale information, and rumor-only claims.
+5. Research coverage and missing data.
+6. Current external verification, when required.
+7. Codex inference and its assumptions.
+8. Catalysts, risks, monitoring indicators, and invalidation conditions when relevant.
 
-- **Search the wiki first.** Only go to raw sources if the wiki doesn't have the answer.
-- **Cite your sources.** Every factual claim should link to the wiki page it came from.
-- **Valuable answers compound.** Encourage saving good analyses back into the wiki.
-- Use `[[wikilinks]]` for all internal references. Never use raw file paths.
+Do not fill gaps with speculation.
 
-## Related Skills
+## Optional save
 
-- `/second-brain-ingest` — process new sources into wiki pages
-- `/second-brain-lint` — health-check the wiki for issues
+If the answer creates a durable comparison or synthesis:
+
+1. propose a target page and show what would be saved;
+2. wait for user approval;
+3. use the appropriate template in `../../templates/`;
+4. save under `wiki/synthesis/`;
+5. update `wiki/index.md`;
+6. append a query entry to `wiki/log.md`.
+
+Never convert a read-only query into a write without approval.

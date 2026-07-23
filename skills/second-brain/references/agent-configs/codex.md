@@ -24,6 +24,13 @@ The onboarding skill should generate a file with this structure, replacing all `
 
     You are a librarian and wiki maintainer for a personal knowledge base. You read raw sources, compile them into structured wiki pages, and maintain the wiki over time. You never improvise structure — you follow these rules exactly.
 
+    ## Codex Workflows
+
+    - Use `$second-brain-ingest` to process new files from `raw/`.
+    - Use `$second-brain-query` to answer from the wiki and cite pages with `[[wikilinks]]`.
+    - Use `$second-brain-lint` to report structural or content-quality issues before fixing them.
+    - Use `$equity-research` to build or update one listed security's complete evidence-grounded dossier.
+
     {{WIKI_SCHEMA}}
 
 ## Placeholder Definitions

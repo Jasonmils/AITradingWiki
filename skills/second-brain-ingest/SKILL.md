@@ -1,132 +1,96 @@
 ---
 name: second-brain-ingest
-description: >
-  Process raw source documents into wiki pages. Use when the user adds
-  files to raw/ and wants them ingested, says "process this source",
-  "ingest this article", "I added something to raw/", or wants to
-  incorporate new material into their knowledge base.
-allowed-tools: Bash Read Write Edit Glob Grep
+description: Process one or more immutable documents from raw/ into evidence-classified Source, Entity, Concept, Event, and Model wiki updates. Use when the user asks to ingest, import, process, or summarize raw files, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", or "摄入财报". Preserve originals and present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, or a complete single-stock dossier.
 ---
 
 # Second Brain — Ingest
 
-Process raw source documents into structured, interlinked wiki pages.
+Convert immutable raw evidence into selective, interlinked investment-research pages.
 
-## Identify Sources to Process
+## Guardrails
 
-Determine which files need ingestion:
+- Never edit, rename, move, or delete anything in `raw/` or `raw/assets/`.
+- Treat a file specified by the user as the source. Otherwise compare files directly under `raw/` with ingest entries in `wiki/log.md`; exclude `raw/assets/`.
+- Read the source completely. Inspect referenced images only when they carry material evidence.
+- Read `../second-brain/references/wiki-schema.md` before planning writes.
+- Do not perform a complete security dossier or create a new trading recommendation. Route those requests to `$equity-research`.
 
-1. If the user specifies a file or files, use those
-2. If the user says "process new sources" or similar, detect unprocessed files:
-   - List all files in `raw/` (excluding `raw/assets/`)
-   - Read `wiki/log.md` and extract all previously ingested source filenames from `ingest` entries
-   - Any file in `raw/` not listed in the log is unprocessed
-3. If no unprocessed files are found, tell the user
+## Phase 1: Evidence preview
 
-## Process Each Source
+Before changing the wiki:
 
-For each source file, follow this workflow:
+1. Identify the source title, author or publisher, source type, publication date, covered period, and knowledge cutoff.
+2. Resolve mentioned companies and securities to canonical exchange-prefixed tickers when evidence supports the mapping. Do not guess an identifier.
+3. Separate historical facts from forecasts, guidance, opinion, rumor, and inference.
+4. Classify material assertions as:
+   - `verified_fact`
+   - `company_statement`
+   - `source_opinion`
+   - `market_consensus`
+   - `non_consensus`
+   - `market_rumor`
+   - `model_assumption`
+   - `codex_inference`
+   - `disputed`
+5. Identify potential Entities, Concepts, Events, and Models.
+6. Present 3–5 key takeaways plus evidence risks, conflicts, stale dates, and missing primary support.
+7. List the pages that would be created or updated.
+8. Wait for explicit user approval before writing.
 
-### 1. Read the source completely
+## Phase 2: Selective writes
 
-Read the entire file. If the file contains image references, note them — read the images separately if they contain important information.
+After approval, use the matching file from `../../templates/`.
 
-### 2. Discuss key takeaways with the user
+### Source
 
-Before writing anything, share the 3-5 most important takeaways from the source. Ask the user if they want to emphasize any particular aspects or skip any topics. Wait for confirmation before proceeding.
+Create one Source page that faithfully records what the source states. Include source metadata, material assertions, evidence classifications, `as_of`, and limitations. Do not add an independent investment conclusion.
 
-### 3. Create source summary page
+### Entity and Concept
 
-Create a new file in `wiki/sources/` named after the source (slugified). Include:
+Update a canonical Entity or Concept when the source adds material, reusable information. Create a new page only when the object will likely be queried again or matters to an investment thesis. Avoid aliases and near-duplicates.
 
-    ---
-    tags: [relevant, tags]
-    sources: [original-filename.md]
-    created: YYYY-MM-DD
-    updated: YYYY-MM-DD
-    ---
+### Event
 
-    # Source Title
+Create or update an Event for dated changes such as:
 
-    **Source:** original-filename.md
-    **Date ingested:** YYYY-MM-DD
-    **Type:** article | paper | transcript | notes | etc.
+- earnings or guidance;
+- formal orders or deliveries;
+- technical certification;
+- merger, control change, or asset injection;
+- financing or regulatory action.
 
-    ## Summary
+Record announcement, expected, and effective dates separately. Preserve the difference between announcement, completion, delivery, recognized revenue, profit, and cash flow.
 
-    Structured summary of the source content.
+### Model
 
-    ## Key Claims
+Create or update a Model only when the source contains material forecast or valuation inputs. Put revenue, margin, expense, cash-flow, capital-expenditure, ownership, consolidation, earnings, valuation, scenario, or sensitivity assumptions here—not in Source facts.
 
-    - Claim 1
-    - Claim 2
-    - ...
+Label every forecast input as reported fact, company guidance, source opinion, or `model_assumption`. Do not silently adopt a source author's forecast as the wiki's model.
 
-    ## Entities Mentioned
+## Cross-link and register
 
-    - [[Entity Name]] — brief context
-    - ...
+1. Link related pages with `[[Page Title]]`.
+2. Preserve every number's period, date, currency, units, and source.
+3. Preserve conflicting claims with attribution and mark disputed assertions.
+4. Add concise entries to the correct `wiki/index.md` sections. Include ticker, page type, `as_of`, status, and description when applicable.
+5. Append an ingest entry to `wiki/log.md`; never edit older entries.
 
-    ## Concepts Covered
+Use this log form:
 
-    - [[Concept Name]] — brief context
-    - ...
+```markdown
+## [YYYY-MM-DD] ingest | Source Title
+Processed source-file. Created: [...]. Updated: [...]. Evidence risks: [...].
+```
 
-### 4. Update entity and concept pages
+## Report
 
-For each entity (person, organization, product, tool) and concept (idea, framework, theory, pattern) mentioned in the source:
+Return:
 
-**If a wiki page already exists:**
-- Read the existing page
-- Add new information from this source
-- Add the source to the `sources:` frontmatter list
-- Update the `updated:` date
-- Note any contradictions with existing content, citing both sources
+- source and knowledge cutoff;
+- pages created and updated;
+- evidence classification highlights;
+- Events and Models created or changed;
+- conflicts, rumors, stale information, and missing evidence;
+- items deliberately not promoted into standalone pages.
 
-**If no wiki page exists:**
-- Create a new page in the appropriate subdirectory:
-  - `wiki/entities/` for people, organizations, products, tools
-  - `wiki/concepts/` for ideas, frameworks, theories, patterns
-- Include YAML frontmatter with tags, sources, created, and updated fields
-- Write a focused summary based on what this source says about the topic
-
-### 5. Add wikilinks
-
-Ensure all related pages link to each other using `[[wikilink]]` syntax. Every mention of an entity or concept that has its own page should be linked.
-
-### 6. Update wiki/index.md
-
-For each new page created, add an entry under the appropriate category header:
-
-    - [[Page Name]] — one-line summary (under 120 characters)
-
-### 7. Update wiki/log.md
-
-Append:
-
-    ## [YYYY-MM-DD] ingest | Source Title
-    Processed source-filename.md. Created N new pages, updated M existing pages.
-    New entities: [[Entity1]], [[Entity2]]. New concepts: [[Concept1]].
-
-### 8. Report results
-
-Tell the user what was done:
-- Pages created (with links)
-- Pages updated (with what changed)
-- New entities and concepts identified
-- Any contradictions found with existing content
-
-## Conventions
-
-- Source summary pages are **factual only**. Save interpretation and synthesis for concept and synthesis pages.
-- A single source typically touches **10-15 wiki pages**. This is normal and expected.
-- When new information contradicts existing wiki content, **update the wiki page and note the contradiction** with both sources cited.
-- **Prefer updating existing pages** over creating new ones. Only create a new page when the topic is distinct enough to warrant its own page.
-- Use `[[wikilinks]]` for all internal references. Never use raw file paths.
-
-## What's Next
-
-After ingesting sources, the user can:
-- **Ask questions** with `/second-brain-query` to explore what was ingested
-- **Ingest more sources** — clip another article and run `/second-brain-ingest` again
-- **Health-check** with `/second-brain-lint` after every 10 ingests to catch gaps
+Suggest `$second-brain-query`, `$equity-research`, or `$second-brain-lint` as the appropriate next workflow.

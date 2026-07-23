@@ -9,7 +9,10 @@ node_modules/
 credentials*
 
 # npx skills install artifacts
-.agents/
+# Keep the Codex-native project skills in .agents/skills under version control.
+.agents/*
+!.agents/skills/
+!.agents/skills/**
 .adal/
 .augment/
 .bob/

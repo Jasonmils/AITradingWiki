@@ -1,13 +1,10 @@
 #!/bin/bash
-set -e
-
-# Test: onboarding.sh creates correct vault structure
-# Usage: bash tests/test_onboarding.sh
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ONBOARDING="$REPO_ROOT/skills/second-brain/scripts/onboarding.sh"
-TEST_DIR=$(mktemp -d)
+TEST_DIR="$(mktemp -d)"
 TEST_VAULT="$TEST_DIR/test-vault"
 
 cleanup() {
@@ -18,91 +15,149 @@ trap cleanup EXIT
 PASS=0
 FAIL=0
 
+pass() {
+  echo "  PASS: $1"
+  PASS=$((PASS + 1))
+}
+
+fail() {
+  echo "  FAIL: $1"
+  FAIL=$((FAIL + 1))
+}
+
 assert_dir() {
   if [ -d "$1" ]; then
-    echo "  PASS: directory exists — $1"
-    PASS=$((PASS + 1))
+    pass "directory exists — $1"
   else
-    echo "  FAIL: directory missing — $1"
-    FAIL=$((FAIL + 1))
+    fail "directory missing — $1"
   fi
 }
 
 assert_file() {
   if [ -f "$1" ]; then
-    echo "  PASS: file exists — $1"
-    PASS=$((PASS + 1))
+    pass "file exists — $1"
   else
-    echo "  FAIL: file missing — $1"
-    FAIL=$((FAIL + 1))
+    fail "file missing — $1"
   fi
 }
 
 assert_contains() {
-  if grep -q "$2" "$1" 2>/dev/null; then
-    echo "  PASS: file contains '$2' — $1"
-    PASS=$((PASS + 1))
+  if grep -Fq "$2" "$1" 2>/dev/null; then
+    pass "file contains '$2' — $1"
   else
-    echo "  FAIL: file does not contain '$2' — $1"
-    FAIL=$((FAIL + 1))
+    fail "file does not contain '$2' — $1"
   fi
 }
 
+file_digest() {
+  cksum "$1" | awk '{print $1 ":" $2}'
+}
+
+tree_manifest() {
+  local root="$1"
+  find "$root" -type f -print | LC_ALL=C sort | while IFS= read -r path; do
+    printf '%s ' "${path#"$root"/}"
+    file_digest "$path"
+  done
+}
+
 echo "=== Test: onboarding.sh ==="
-echo ""
 
-# Test 1: Script runs successfully on a new directory
-echo "Test 1: Fresh vault scaffolding"
-bash "$ONBOARDING" "$TEST_VAULT" 2>/dev/null
+echo "Test 1: Fresh investment-research vault scaffolding"
+OUTPUT="$(bash "$ONBOARDING" "$TEST_VAULT" 2>/dev/null)"
 
-assert_dir "$TEST_VAULT/raw"
-assert_dir "$TEST_VAULT/raw/assets"
-assert_dir "$TEST_VAULT/wiki"
-assert_dir "$TEST_VAULT/wiki/sources"
-assert_dir "$TEST_VAULT/wiki/entities"
-assert_dir "$TEST_VAULT/wiki/concepts"
-assert_dir "$TEST_VAULT/wiki/synthesis"
-assert_dir "$TEST_VAULT/output"
+for dir in \
+  raw \
+  raw/assets \
+  wiki \
+  wiki/sources \
+  wiki/entities \
+  wiki/concepts \
+  wiki/events \
+  wiki/models \
+  wiki/synthesis \
+  templates \
+  output; do
+  assert_dir "$TEST_VAULT/$dir"
+done
 
-echo ""
+for template in \
+  source.md \
+  entity.md \
+  event.md \
+  model.md \
+  investment-thesis.md \
+  monitoring.md; do
+  assert_file "$TEST_VAULT/templates/$template"
+done
 
-# Test 2: wiki/index.md created with correct scaffolding
-echo "Test 2: wiki/index.md content"
+echo "Test 2: Index and log scaffolding"
 assert_file "$TEST_VAULT/wiki/index.md"
-assert_contains "$TEST_VAULT/wiki/index.md" "## Sources"
-assert_contains "$TEST_VAULT/wiki/index.md" "## Entities"
-assert_contains "$TEST_VAULT/wiki/index.md" "## Concepts"
-assert_contains "$TEST_VAULT/wiki/index.md" "## Synthesis"
-
-echo ""
-
-# Test 3: wiki/log.md created with header
-echo "Test 3: wiki/log.md content"
 assert_file "$TEST_VAULT/wiki/log.md"
+
+for section in \
+  "## Sources" \
+  "## Entities" \
+  "## Concepts" \
+  "## Events" \
+  "## Models" \
+  "## Synthesis" \
+  "## Active Theses" \
+  "## Monitoring"; do
+  assert_contains "$TEST_VAULT/wiki/index.md" "$section"
+done
 assert_contains "$TEST_VAULT/wiki/log.md" "# Log"
 
-echo ""
+echo "Test 3: Idempotency and immutable-content protection"
+printf '\n# Custom index content\n' >> "$TEST_VAULT/wiki/index.md"
+printf '\n## Custom log content\n' >> "$TEST_VAULT/wiki/log.md"
+printf '%s\n' "existing event page" > "$TEST_VAULT/wiki/events/existing-event.md"
+printf '%s\n' "existing template" > "$TEST_VAULT/templates/custom.md"
+printf '%s\n' "immutable source" > "$TEST_VAULT/raw/source.md"
+printf '%s\n' "immutable attachment" > "$TEST_VAULT/raw/assets/chart.txt"
 
-# Test 4: Idempotent — running again doesn't overwrite existing files
-echo "Test 4: Idempotency"
-echo "# Custom content" >> "$TEST_VAULT/wiki/index.md"
-bash "$ONBOARDING" "$TEST_VAULT" 2>/dev/null
-assert_contains "$TEST_VAULT/wiki/index.md" "# Custom content"
+INDEX_BEFORE="$(file_digest "$TEST_VAULT/wiki/index.md")"
+LOG_BEFORE="$(file_digest "$TEST_VAULT/wiki/log.md")"
+WIKI_BEFORE="$(tree_manifest "$TEST_VAULT/wiki")"
+TEMPLATES_BEFORE="$(tree_manifest "$TEST_VAULT/templates")"
+RAW_BEFORE="$(tree_manifest "$TEST_VAULT/raw")"
 
-echo ""
+bash "$ONBOARDING" "$TEST_VAULT" >/dev/null 2>&1
 
-# Test 5: Script outputs valid JSON
-echo "Test 5: JSON output"
-OUTPUT=$(bash "$ONBOARDING" "$TEST_VAULT" 2>/dev/null)
-if echo "$OUTPUT" | python3 -m json.tool > /dev/null 2>&1; then
-  echo "  PASS: output is valid JSON"
-  PASS=$((PASS + 1))
+[ "$INDEX_BEFORE" = "$(file_digest "$TEST_VAULT/wiki/index.md")" ] \
+  && pass "existing index preserved byte-for-byte" \
+  || fail "existing index changed"
+[ "$LOG_BEFORE" = "$(file_digest "$TEST_VAULT/wiki/log.md")" ] \
+  && pass "existing log preserved byte-for-byte" \
+  || fail "existing log changed"
+[ "$WIKI_BEFORE" = "$(tree_manifest "$TEST_VAULT/wiki")" ] \
+  && pass "existing wiki files preserved" \
+  || fail "existing wiki files changed"
+[ "$TEMPLATES_BEFORE" = "$(tree_manifest "$TEST_VAULT/templates")" ] \
+  && pass "existing templates preserved" \
+  || fail "existing templates changed"
+[ "$RAW_BEFORE" = "$(tree_manifest "$TEST_VAULT/raw")" ] \
+  && pass "raw source and attachment preserved" \
+  || fail "raw source or attachment changed"
+
+echo "Test 4: JSON output"
+if printf '%s' "$OUTPUT" | python3 -m json.tool >/dev/null 2>&1; then
+  pass "output is valid JSON"
 else
-  echo "  FAIL: output is not valid JSON"
-  FAIL=$((FAIL + 1))
+  fail "output is not valid JSON"
 fi
 
-echo ""
+for json_path in \
+  "wiki/events/" \
+  "wiki/models/" \
+  "templates/"; do
+  if printf '%s' "$OUTPUT" | grep -Fq "\"$json_path\""; then
+    pass "JSON lists $json_path"
+  else
+    fail "JSON does not list $json_path"
+  fi
+done
+
 echo "=== Results: $PASS passed, $FAIL failed ==="
 
 if [ "$FAIL" -gt 0 ]; then

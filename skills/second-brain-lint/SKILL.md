@@ -1,123 +1,99 @@
 ---
 name: second-brain-lint
-description: >
-  Health-check the wiki for contradictions, orphan pages, stale claims,
-  and missing cross-references. Use when the user says "audit",
-  "health check", "lint", "find problems", or wants to improve wiki quality.
-allowed-tools: Bash Read Write Edit Glob Grep
+description: Audit wiki structure and investment-research integrity, including links, orphans, index drift, required metadata, review dates, evidence classification, ticker and numeric consistency, Event status, Model reconciliation, thesis completeness, and Entity Hub coverage. Use when the user asks to lint, audit, health-check, inspect stale claims, find problems, or "检查知识库". Report severity, file and line evidence, and a proposed fix before changing anything; apply fixes only after approval.
 ---
 
 # Second Brain — Lint
 
-Health-check the wiki and report issues with actionable fixes.
+Audit the wiki without silently repairing or filling research gaps.
 
-## Audit Steps
+## Prepare
 
-Run all checks below, then present a consolidated report.
+1. Read `wiki/index.md`.
+2. Scan Markdown files in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, `wiki/events/`, `wiki/models/`, and `wiki/synthesis/`.
+3. Read `../second-brain/references/wiki-schema.md`.
+4. Keep `raw/` immutable.
 
-### 1. Broken wikilinks
+## Structural checks
 
-Scan all wiki pages for `[[wikilink]]` references. For each link, verify the target page exists. Report any broken links.
+- Broken or ambiguous `[[wikilinks]]`.
+- Orphan pages with no inbound link.
+- Near-duplicate Entities, Concepts, Events, or ticker aliases.
+- Pages missing from the correct index section.
+- Index entries that point to missing pages.
+- Events or Models absent from their index sections.
+- Active theses or monitoring pages absent from `Active Theses` or `Monitoring`.
+- Existing pages that violate filename, title, or wikilink conventions.
 
-```bash
-# Find all wikilinks across wiki pages
-grep -roh '\[\[[^]]*\]\]' wiki/ | sort -u
+## Metadata and currentness checks
+
+- Missing `page_type`, `subject`, `tags`, `tickers`, `markets`, `asset_classes`, `industries`, `themes`, `as_of`, `sources`, `created`, or `updated`.
+- Models, theses, monitoring, or current judgments missing `status`, `confidence`, `horizon`, or `review_after`.
+- `active` pages whose `review_after` date has passed.
+- Current conclusions whose `as_of` is absent or stale.
+- Inconsistent ticker formats or multiple aliases treated as separate securities.
+- Financial or valuation numbers missing period, date, currency, units, or source.
+
+## Evidence-integrity checks
+
+- Rumor, author opinion, management guidance, or Model assumption presented as `verified_fact`.
+- Material assertions missing an evidence type or citation.
+- Conflicting claims not retained or marked `disputed`.
+- Certification treated as an order, order as delivery, delivery as revenue, or revenue as profit or cash flow without evidence.
+- Missing invalidation conditions for material non-consensus views or Codex inferences.
+
+## Event checks
+
+- Missing `event_type`, `event_status`, announcement date, expected date, or next review.
+- Pending Events whose milestone or `review_after` has passed.
+- Completed, delayed, cancelled, or disputed Events still marked pending.
+- Transaction, order, certification, earnings, or regulatory status not reconciled with newer evidence.
+
+## Model checks
+
+- `model_assumption` without a source, period, units, or confidence.
+- Reported facts, company guidance, source forecasts, and Codex assumptions mixed together.
+- Missing conservative, base, or optimistic scenarios.
+- Missing valuation or sensitivity analysis when the Model supports a valuation conclusion.
+- Missing consolidation date, ownership percentage, minority interests, or attributable profit when relevant.
+- Historical financials, cash flow, receivables, inventory, or capital expenditure inconsistent with the latest ingested report.
+- Model not reconciled with the latest financial statements.
+
+## Thesis and Entity Hub checks
+
+- Investment thesis missing knowledge cutoff, catalysts, risks, monitoring indicators, or invalidation conditions.
+- Superseded or failed thesis still marked active instead of `superseded` or `invalidated`.
+- Current-price conclusion based on stale price or valuation.
+- Industry attractiveness treated as equivalent to research priority or current-price tradability.
+- Listed-security Entity Hub missing coverage status for governance, segments, industry, products, customers, historical financials, Model, valuation, or thesis.
+- Coverage marked complete despite missing, stale, conflicting, or rumor-only support.
+
+## Report
+
+Group findings:
+
+- **Errors**: broken structure, false evidence promotion, material contradictions, invalid index entries, or unsafe current conclusions.
+- **Warnings**: stale pages, missing metadata, unreconciled Models or Events, incomplete theses, or weak Entity coverage.
+- **Info**: useful cross-links, optional consolidation, or research gaps.
+
+For every finding include:
+
+- what;
+- severity;
+- file and line;
+- evidence;
+- proposed fix;
+- whether external verification or user judgment is required.
+
+Finish with counts and ask which fixes the user approves. Do not invent missing facts and do not change files before approval.
+
+## After approved fixes
+
+Apply only the approved set. Preserve superseded or invalidated history. Update `wiki/index.md` where needed and append:
+
+```markdown
+## [YYYY-MM-DD] lint | Health check
+Found N errors, N warnings, and N info items. Fixed: [...].
 ```
 
-Cross-reference against actual files in `wiki/`.
-
-### 2. Orphan pages
-
-Find pages with no inbound links — no other page references them via `[[wikilink]]`.
-
-For each `.md` file in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, `wiki/synthesis/`:
-- Extract the page name (filename without extension)
-- Search all other wiki pages for `[[Page Name]]`
-- If no other page links to it, it's an orphan
-
-### 3. Contradictions
-
-Read pages that share entities or concepts and look for conflicting claims. Flag when:
-- Two source summaries make opposing claims about the same topic
-- An entity page contains information that conflicts with a source summary
-- Dates, figures, or factual claims differ between pages
-
-### 4. Stale claims
-
-Cross-reference source dates with wiki content. Flag when:
-- A concept page cites only old sources and newer sources exist on the same topic
-- Entity information hasn't been updated despite newer sources mentioning that entity
-
-### 5. Missing pages
-
-Scan for `[[wikilinks]]` that point to pages that don't exist yet. These are topics the wiki mentions but hasn't given their own page. Assess whether they warrant a page.
-
-### 6. Missing cross-references
-
-Find pages that discuss the same topics but don't link to each other. Look for:
-- Entity pages that mention concepts without linking them
-- Concept pages that mention entities without linking them
-- Source summaries that cover the same topic but don't reference each other
-
-### 7. Index consistency
-
-Verify `wiki/index.md` is complete and accurate:
-- Every page in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, `wiki/synthesis/` has an index entry
-- No index entries point to deleted pages
-- Entries are under the correct category header
-
-### 8. Data gaps
-
-Based on the wiki's current coverage, suggest:
-- Topics mentioned frequently but lacking depth
-- Questions the wiki can't answer well
-- Areas where a web search could fill in missing information
-
-## Report Format
-
-Present findings grouped by severity:
-
-### Errors (must fix)
-- Broken wikilinks
-- Contradictions between pages
-- Index entries pointing to missing pages
-
-### Warnings (should fix)
-- Orphan pages with no inbound links
-- Stale claims from outdated sources
-- Missing pages for frequently referenced topics
-
-### Info (nice to fix)
-- Potential cross-references to add
-- Data gaps that could be filled
-- Index entries that could be more descriptive
-
-For each finding, include:
-- **What:** description of the issue
-- **Where:** the specific file(s) and line(s)
-- **Fix:** what to do about it
-
-## After the Report
-
-Ask the user:
-> "Found N errors, N warnings, and N info items. Want me to fix any of these?"
-
-If the user agrees, fix issues and report what changed.
-
-## Log the lint pass
-
-Append to `wiki/log.md`:
-
-    ## [YYYY-MM-DD] lint | Health check
-    Found N errors, N warnings, N info items. Fixed: [list of fixes applied].
-
-## When to Lint
-
-- **After every 10 ingests** — catches cross-reference gaps while they're fresh
-- **Monthly at minimum** — catches stale claims and orphan pages over time
-- **Before major queries** — ensures the wiki is healthy before you rely on it for analysis
-
-## Related Skills
-
-- `/second-brain-ingest` — process new sources into wiki pages
-- `/second-brain-query` — ask questions against the wiki
+Report files changed, findings left unresolved, and any required re-verification.
