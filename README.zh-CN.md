@@ -4,6 +4,8 @@ AI Trading Wiki 是一个面向二级市场投资研究的 Codex Second Brain。
 
 Codex 负责读取原始资料、维护结构化 Wiki、建立公司与产业之间的关联、更新财务模型、跟踪投资论点并回答问题；Obsidian 负责浏览、搜索、反向链接和图谱展示。
 
+本仓库包含文本、Markdown、PDF 和 MP4 摄入所需的 Codex Skills、模板、视频桥接脚本、配置示例与测试。通过 Git 克隆即可部署代码；原始资料、API Key、模型权重、缓存和生成的时间轴默认只保留在本地，不进入 Git。
+
 系统将投资研究拆成六层：
 
 > 证据 → 对象 → 机制 → 事件 → 模型 → 投资判断
@@ -16,6 +18,98 @@ Codex 负责读取原始资料、维护结构化 Wiki、建立公司与产业之
 - 财务预测依赖哪些假设？
 - 哪些事件可以验证或推翻投资论点？
 - 行业值得研究，是否等于当前价格值得交易？
+
+## 通过 Git 直接部署
+
+### 1. 克隆并初始化 Codex 项目技能
+
+```bash
+git clone https://github.com/Jasonmils/AITradingWiki.git
+cd AITradingWiki
+bash scripts/setup_codex.sh
+```
+
+`setup_codex.sh` 是幂等脚本，可以重复执行。它会：
+
+- 创建缺失的 `raw/`、`wiki/`、`templates/` 和 `output/` 目录；
+- 保留已有原始资料、Wiki 页面、索引和日志；
+- 在 `.agents/skills/` 建立指向 `skills/` 的相对链接；
+- 让 Codex 从仓库根目录发现五个项目技能。
+
+脚本完成后，从仓库根目录新建一个 Codex 任务或重启 Codex。需要 Obsidian 浏览时，将同一目录作为 Vault 打开。
+
+### 2. 可选：部署 MP4 摄入流水线
+
+普通文本、Markdown 和 PDF 摄入不需要本项目 API Key。MP4 流程当前使用 macOS 版 Video2Skill_Invest 集成，需要：
+
+- macOS；
+- Git；
+- Python 3.11 或 3.12；
+- 用于 pyannote 模型的 `HF_TOKEN`；
+- 用于转录优化的 `DEEPSEEK_API_KEY`。
+
+安装命令：
+
+```bash
+bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD"
+```
+
+安装脚本会把 [Video2Skill_Invest](https://github.com/Jasonmils/Video2Skill_Invest) 部署到 Git 忽略的 `.work/tools/Video2Skill_Invest/`，安装本地 Python 环境，并在仓库根目录生成：
+
+```text
+.env.video-ingest.local
+```
+
+在该文件填写：
+
+```dotenv
+HF_TOKEN=
+DEEPSEEK_API_KEY=
+```
+
+不要把真实 key 写进 README、prompt、普通配置文件或 Git。视频、音频和幻灯片图片只在本地处理；获得策展人明确许可后，DeepSeek 只接收转录文字和相关 PPT OCR 文字。
+
+### 3. 验证部署
+
+```bash
+bash tests/test_onboarding.sh
+bash tests/test_codex_compat.sh
+bash tests/test_video_ingest.sh
+git diff --check
+```
+
+### 4. 更新代码
+
+```bash
+git pull --ff-only
+bash scripts/setup_codex.sh
+```
+
+如果已安装 MP4 流水线，再执行：
+
+```bash
+bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD" update
+```
+
+Video2Skill 更新只接受干净的上游 checkout，并使用 fast-forward-only；不会 reset、移动 `raw/` 或覆盖 Wiki。
+
+## Git 与本地数据边界
+
+Git 跟踪：
+
+- 五个 Codex Skills 及其 metadata；
+- 初始化脚本、视频桥接脚本和配置示例；
+- Canonical Wiki 模板与验证测试；
+- Canonical Wiki 页面、`wiki/index.md` 和 append-only `wiki/log.md`。
+
+只在本地保留并由 `.gitignore` 排除：
+
+- `raw/` 内的研报、财报、视频、转录稿和附件；
+- `.env*` 中的 API Key；
+- `.work/` 内的 Video2Skill checkout、虚拟环境、模型和缓存；
+- `output/` 内的报告、时间轴和其他可再生成产物。
+
+发布 fork 前仍应检查 Canonical Wiki 页面是否包含授权受限、私人或个人身份信息。默认忽略规则能保护原始文件，但无法自动判断已经写入 Wiki 正文的内容。
 
 ## 目录结构
 
@@ -68,10 +162,10 @@ AITradingWiki/
 
 ## 第一次打开
 
-1. 在 Codex 中将工作目录设为：
+1. 在 Codex 中将工作目录设为刚刚克隆的仓库根目录，例如：
 
 ```text
-/Users/jasonmils/Library/Mobile Documents/iCloud~md~obsidian/Documents/jason_icloud_note/AITradingWiki
+/path/to/AITradingWiki
 ```
 
 2. 升级后新建一个 Codex 任务或重启 Codex，使其重新发现五个项目技能。
@@ -168,7 +262,7 @@ NASDAQ:NVDA
 
 ### 1. 收集资料
 
-把 Markdown、纯文本、财报、研报、电话会转录稿和会议记录放进 `raw/`。网页可通过 Obsidian Web Clipper 保存到 `raw/`，图片和附件放到 `raw/assets/`。
+把 Markdown、纯文本、PDF 财报/研报、MP4 视频、电话会转录稿和会议记录放进 `raw/`。网页可通过 Obsidian Web Clipper 保存到 `raw/`，图片和附件放到 `raw/assets/`。
 
 不要编辑、移动、改名或删除已经放入 `raw/` 的文件。
 
@@ -188,7 +282,59 @@ $second-brain-ingest 处理 raw/震安科技综合分析.md。
 
 Codex 应创建 Source，选择性更新 Entity 和 Concept，把交易变化写入 Event，把预测和估值假设写入 Model，并更新 index、追加 log。
 
-### 3. 摄入财报
+### 3. 摄入 MP4 视频
+
+首次使用先安装本地视频流水线：
+
+```bash
+bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD"
+```
+
+安装脚本会把 `Video2Skill_Invest` 放到 `.work/tools/Video2Skill_Invest`，并在仓库根目录创建不会被 Git 跟踪的：
+
+```text
+.env.video-ingest.local
+```
+
+在该文件填写：
+
+```dotenv
+HF_TOKEN=
+DEEPSEEK_API_KEY=
+```
+
+`HF_TOKEN` 用于首次下载/访问 pyannote 模型，`DEEPSEEK_API_KEY` 用于优化转录。不要把 key 写进 prompt、配置文件或 Git。
+
+上游发布新版本后，可安全对齐本地工具并刷新依赖：
+
+```bash
+bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD" update
+```
+
+更新只接受干净的上游 checkout，并使用 fast-forward-only；不会 reset 或覆盖本地修改。
+
+然后在 Codex 中说：
+
+```text
+$second-brain-ingest 处理 raw/课程视频.mp4。
+
+先运行 MP4 预检并告诉我本地处理、外部传输和产物路径。
+我确认后，允许把转录文字和相关 PPT OCR 文字发送给 DeepSeek；
+不要发送原始视频、音频或幻灯片图片。
+
+Video2Skill 完成后，先审计时间轴、转录覆盖、OCR 缺口和重要不可读页面，
+再使用 timeline.deepseek.html 给我 3–5 个关键结论、证据风险和拟写页面。
+等我第二次确认后，才写入 Wiki。
+```
+
+视频流程有两道确认：
+
+1. 远程处理确认：允许 DeepSeek 接收派生文字；
+2. Wiki 写入确认：审阅 3–5 个结论和证据风险后才修改 canonical 页面。
+
+原始 MP4 始终保留在 `raw/`。本地 ASR/OCR 的权威时间轴、原始 HTML、DeepSeek HTML 和 provenance manifest 位于 `output/video-ingest/`，属于可再生成的非 canonical 产物。Wiki Source 页面应同时记录原始 MP4、`timeline.json`、`timeline.html` 和 `timeline.deepseek.html`，不能把 ASR、OCR 或 DeepSeek 修订自动标成 `verified_fact`。
+
+### 4. 摄入财报
 
 ```text
 $second-brain-ingest 处理 raw/公司名称-2026Q2财报.pdf。
@@ -200,7 +346,7 @@ $second-brain-ingest 处理 raw/公司名称-2026Q2财报.pdf。
 company_statement，不要当作已经实现的结果。
 ```
 
-### 4. 建立单个股票研究档案
+### 5. 建立单个股票研究档案
 
 ```text
 $equity-research 为 SZSE:300767 建立完整研究档案。
@@ -218,7 +364,7 @@ $equity-research 为 SZSE:300767 建立完整研究档案。
 
 该技能默认先交付研究报告和拟写页面清单，得到同意后才更新 Entity Hub、Event、Model、Synthesis、index 和 log。
 
-### 5. 查询单个标的的已有观点
+### 6. 查询单个标的的已有观点
 
 ```text
 $second-brain-query 我的知识库对 NASDAQ:NVDA 的当前判断是什么？
@@ -239,7 +385,7 @@ $second-brain-query 我的知识库对 NASDAQ:NVDA 的当前判断是什么？
 
 如果问题要求完整建档、更新模型或判断当前是否建仓，应改用 `$equity-research`。
 
-### 6. 比较多个股票
+### 7. 比较多个股票
 
 ```text
 $second-brain-query 比较 NVDA、AVGO 和 AMD 的 AI 基础设施暴露。
@@ -250,7 +396,7 @@ $second-brain-query 比较 NVDA、AVGO 和 AMD 的 AI 基础设施暴露。
 区分已验证事实、共识、非共识和 Codex 推断。
 ```
 
-### 7. 更新投资论点
+### 8. 更新投资论点
 
 ```text
 $equity-research 更新 [[公司名称-投资论点-2026H2]]。
@@ -268,7 +414,7 @@ $equity-research 更新 [[公司名称-投资论点-2026H2]]。
 
 旧论点不能删除，应保留用于复盘。
 
-### 8. 运行健康检查
+### 9. 运行健康检查
 
 ```text
 $second-brain-lint 检查以下问题，先报告，不要直接修复：
@@ -370,8 +516,9 @@ bash scripts/setup_codex.sh
 ```bash
 bash tests/test_onboarding.sh
 bash tests/test_codex_compat.sh
+bash tests/test_video_ingest.sh
 ```
 
 修改技能时只编辑 `skills/<skill-name>/`。`.agents/skills/` 会自动指向最新内容。技能未刷新时，新建 Codex 任务或重启 Codex。
 
-基础工作流不需要 API Key。不要把 API Key、券商凭证或个人隐私写入仓库。`qmd`、`summarize` 和 `agent-browser` 是可选工具，不影响基本使用。
+普通文档的基础工作流不需要 API Key；MP4 流程需要本地 `HF_TOKEN` 和 `DEEPSEEK_API_KEY`。不要把 API Key、券商凭证或个人隐私写入仓库。`qmd`、`summarize` 和 `agent-browser` 是可选工具，不影响基本使用。

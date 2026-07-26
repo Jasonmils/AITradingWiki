@@ -19,68 +19,68 @@ base_currency: ""
 units: ""
 ---
 
-# Model Title
+# 模型标题
 
-## Purpose and Scope
+## 目的与范围
 
-## Historical Inputs
+## 历史输入
 
-| Metric | Segment | Period | Value | Currency | Units | Evidence Type | Source |
+| 指标 | 业务板块 | 期间 | 数值 | 币种 | 单位 | 证据类型 | 来源 |
 |---|---|---|---:|---|---|---|---|
-| Revenue |  |  |  |  |  | verified_fact |  |
-| Net profit |  |  |  |  |  | verified_fact |  |
-| Gross margin |  |  |  |  |  | verified_fact |  |
-| R&D expense |  |  |  |  |  | verified_fact |  |
-| Selling expense |  |  |  |  |  | verified_fact |  |
-| Administrative expense |  |  |  |  |  | verified_fact |  |
-| Operating cash flow |  |  |  |  |  | verified_fact |  |
-| Accounts receivable |  |  |  |  |  | verified_fact |  |
-| Inventory |  |  |  |  |  | verified_fact |  |
-| Capital expenditure |  |  |  |  |  | verified_fact |  |
+| 营业收入 |  |  |  |  |  | verified_fact |  |
+| 净利润 |  |  |  |  |  | verified_fact |  |
+| 毛利率 |  |  |  |  |  | verified_fact |  |
+| 研发费用 |  |  |  |  |  | verified_fact |  |
+| 销售费用 |  |  |  |  |  | verified_fact |  |
+| 管理费用 |  |  |  |  |  | verified_fact |  |
+| 经营现金流 |  |  |  |  |  | verified_fact |  |
+| 应收账款 |  |  |  |  |  | verified_fact |  |
+| 存货 |  |  |  |  |  | verified_fact |  |
+| 资本开支 |  |  |  |  |  | verified_fact |  |
 
-## Assumptions
+## 假设
 
-| Assumption | Segment | Scenario | Value | Period | Currency | Units | Evidence Type | Source | Confidence |
+| 假设 | 业务板块 | 情景 | 数值 | 期间 | 币种 | 单位 | 证据类型 | 来源 | 置信度 |
 |---|---|---|---:|---|---|---|---|---|---|
-| Volume |  | conservative |  |  |  |  | model_assumption |  |  |
-| Price |  | base |  |  |  |  | model_assumption |  |  |
-| Gross margin |  | optimistic |  |  |  |  | model_assumption |  |  |
+| 销量 |  | conservative |  |  |  |  | model_assumption |  |  |
+| 价格 |  | base |  |  |  |  | model_assumption |  |  |
+| 毛利率 |  | optimistic |  |  |  |  | model_assumption |  |  |
 
-## Segment Forecast
+## 分部预测
 
-## Income Statement
+## 利润表
 
-## Cash Flow, Working Capital, and Capital Expenditure
+## 现金流、营运资本与资本开支
 
-## Consolidation, Ownership, and Minority Interests
+## 并表、持股比例与少数股东权益
 
-| Item | Assumption or Result | Date or Period | Evidence Type | Source |
+| 项目 | 假设或结果 | 日期或期间 | 证据类型 | 来源 |
 |---|---:|---|---|---|
-| Consolidation date |  |  |  |  |
-| Ownership percentage |  |  |  |  |
-| Minority interests |  |  |  |  |
-| Attributable net profit |  |  |  |  |
+| 并表日期 |  |  |  |  |
+| 持股比例 |  |  |  |  |
+| 少数股东权益 |  |  |  |  |
+| 归母净利润 |  |  |  |  |
 
-## Shares, EPS, Net Cash, and Net Debt
+## 股本、EPS、净现金与净债务
 
-| Item | Value | Period | Currency | Units | Evidence Type | Source |
+| 项目 | 数值 | 期间 | 币种 | 单位 | 证据类型 | 来源 |
 |---|---:|---|---|---|---|---|
-| Share count |  |  |  |  |  |  |
-| Earnings per share |  |  |  |  |  |  |
-| Net cash or net debt |  |  |  |  |  |  |
+| 股份数量 |  |  |  |  |  |  |
+| 每股收益 |  |  |  |  |  |  |
+| 净现金或净债务 |  |  |  |  |  |  |
 
-## Valuation
+## 估值
 
-| Scenario | Earnings Metric | Multiple | Implied Value | Current Price As Of | Upside or Downside |
+| 情景 | 盈利指标 | 估值倍数 | 隐含价值 | 当前价格截止日 | 上行或下行空间 |
 |---|---|---:|---:|---|---:|
-| Conservative |  |  |  |  |  |
-| Base |  |  |  |  |  |
-| Optimistic |  |  |  |  |  |
+| 保守 |  |  |  |  |  |
+| 基准 |  |  |  |  |  |
+| 乐观 |  |  |  |  |  |
 
-## Scenario and Sensitivity Analysis
+## 情景与敏感性分析
 
-## Reconciliation with Latest Reported Results
+## 与最新披露结果的勾稽
 
-## Risks, Limitations, and Invalidation Conditions
+## 风险、局限与失效条件
 
-## Change Log
+## 变更记录

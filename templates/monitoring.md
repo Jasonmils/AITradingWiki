@@ -18,26 +18,26 @@ horizon: 1-3m | 6-12m | 12-24m | 3-5y
 review_after: YYYY-MM-DD
 ---
 
-# Subject Monitoring Checklist
+# 研究对象跟踪清单
 
-## Current Thesis Reference
+## 当前投资论点引用
 
-## Monitoring Dashboard
+## 跟踪面板
 
-| Indicator | Current State | Expected State | Frequency | Next Check | Evidence | Trigger |
+| 指标 | 当前状态 | 预期状态 | 频率 | 下次检查 | 证据 | 触发条件 |
 |---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |
 
-## Upcoming Catalysts
+## 即将出现的催化剂
 
-| Catalyst | Expected Date | Probability | Evidence | Investment Impact |
+| 催化剂 | 预计日期 | 概率 | 证据 | 投资影响 |
 |---|---|---|---|---|
 |  |  |  |  |  |
 
-## Risks and Warning Signals
+## 风险与预警信号
 
-## Thesis Invalidation Triggers
+## 论点失效触发条件
 
-## New Evidence Since Last Review
+## 上次复核后的新增证据
 
-## Next Review
+## 下次复核

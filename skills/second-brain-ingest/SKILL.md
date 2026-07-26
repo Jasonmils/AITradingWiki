@@ -1,6 +1,6 @@
 ---
 name: second-brain-ingest
-description: Process one or more immutable documents from raw/ into evidence-classified Source, Entity, Concept, Event, and Model wiki updates. Use when the user asks to ingest, import, process, or summarize raw files, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", or "摄入财报". Preserve originals and present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, or a complete single-stock dossier.
+description: Process immutable documents or MP4 videos from raw/ into evidence-classified Source, Entity, Concept, Event, and Model wiki updates. Use when the user asks to ingest, import, process, transcribe, or summarize raw files, videos, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", "摄入财报", "处理视频", or "摄入 MP4". For MP4, run Video2Skill_Invest to produce a DeepSeek-refined HTML before normal ingestion. Preserve originals and present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, or a complete single-stock dossier.
 ---
 
 # Second Brain — Ingest
@@ -15,11 +15,24 @@ Convert immutable raw evidence into selective, interlinked investment-research p
 - Read `../second-brain/references/wiki-schema.md` before planning writes.
 - Do not perform a complete security dossier or create a new trading recommendation. Route those requests to `$equity-research`.
 
+## MP4 preprocessing
+
+For an `.mp4` source, read `references/video-ingest.md` and follow it before Phase 1:
+
+1. Keep the original MP4 unchanged under `raw/`.
+2. Run the bundled bridge preflight. If the upstream checkout or dependencies are missing, propose the one-time setup command; installation may download code, packages, and model weights, so obtain approval before running it.
+3. Explain that local stages process the media, while DeepSeek receives transcript text and relevant PPT OCR text only. Wait for explicit approval before remote processing.
+4. Run the bridge with `--allow-remote-processing` only after approval.
+5. Require non-empty `timeline.json`, original `timeline.html`, refined `timeline.deepseek.html`, and the bridge manifest. Audit transcript/OCR coverage and important unreadable slides before extracting claims.
+6. Use the manifest's `ingest_input_html` as the Phase 1 reading source. Preserve provenance to every evidence layer and classify ASR/OCR/LLM-derived assertions conservatively.
+
+Do not start Phase 1 or write the Wiki if conversion, refinement, artifact validation, or coverage review fails.
+
 ## Phase 1: Evidence preview
 
 Before changing the wiki:
 
-1. Identify the source title, author or publisher, source type, publication date, covered period, and knowledge cutoff.
+1. Identify the source title, author or publisher, source type, publication date, covered period, and knowledge cutoff. For video, also record duration, source SHA-256, upstream revision, original transcript path, refined HTML path, and known ASR/OCR gaps.
 2. Resolve mentioned companies and securities to canonical exchange-prefixed tickers when evidence supports the mapping. Do not guess an identifier.
 3. Separate historical facts from forecasts, guidance, opinion, rumor, and inference.
 4. Classify material assertions as:

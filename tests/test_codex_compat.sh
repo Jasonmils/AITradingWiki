@@ -79,26 +79,26 @@ for template in "${TEMPLATES[@]}"; do
     || fail "template missing: $template"
 done
 
-grep -Fq "## Key Assertions" "$REPO_ROOT/templates/source.md" \
+grep -Fq "## 关键论断" "$REPO_ROOT/templates/source.md" \
   && pass "Source template contains assertion evidence structure" \
   || fail "Source template is missing assertion evidence structure"
-grep -Fq "## Research Coverage" "$REPO_ROOT/templates/entity.md" \
+grep -Fq "## 研究覆盖" "$REPO_ROOT/templates/entity.md" \
   && pass "Entity template contains Hub coverage structure" \
   || fail "Entity template is missing Hub coverage structure"
 grep -Fq "event_status:" "$REPO_ROOT/templates/event.md" \
   && grep -Fq "expected_date:" "$REPO_ROOT/templates/event.md" \
   && pass "Event template contains lifecycle and time fields" \
   || fail "Event template is missing lifecycle or time fields"
-grep -Fq "## Scenario and Sensitivity Analysis" "$REPO_ROOT/templates/model.md" \
-  && grep -Fq "Minority interests" "$REPO_ROOT/templates/model.md" \
+grep -Fq "## 情景与敏感性分析" "$REPO_ROOT/templates/model.md" \
+  && grep -Fq "少数股东权益" "$REPO_ROOT/templates/model.md" \
   && pass "Model template contains scenario, sensitivity, and ownership structure" \
   || fail "Model template is missing required modeling structure"
-grep -Fq "## Thesis Invalidation Conditions" "$REPO_ROOT/templates/investment-thesis.md" \
-  && grep -Fq "## Valuation and Tradability at the Current Price" "$REPO_ROOT/templates/investment-thesis.md" \
+grep -Fq "## 论点失效条件" "$REPO_ROOT/templates/investment-thesis.md" \
+  && grep -Fq "## 估值与当前价格可交易性" "$REPO_ROOT/templates/investment-thesis.md" \
   && pass "Investment thesis template contains invalidation and tradability" \
   || fail "Investment thesis template is missing required sections"
-grep -Fq "## Monitoring Dashboard" "$REPO_ROOT/templates/monitoring.md" \
-  && grep -Fq "## Next Review" "$REPO_ROOT/templates/monitoring.md" \
+grep -Fq "## 跟踪面板" "$REPO_ROOT/templates/monitoring.md" \
+  && grep -Fq "## 下次复核" "$REPO_ROOT/templates/monitoring.md" \
   && pass "Monitoring template contains indicators and next review" \
   || fail "Monitoring template is missing required sections"
 
@@ -210,6 +210,18 @@ if git -C "$REPO_ROOT" check-ignore -q --no-index "credentials.json"; then
   pass "credential files are ignored"
 else
   fail "credential files are not ignored"
+fi
+
+if git -C "$REPO_ROOT" check-ignore -q --no-index "raw/local-source.mp4"; then
+  pass "raw source files are ignored"
+else
+  fail "raw source files are not ignored"
+fi
+
+if git -C "$REPO_ROOT" check-ignore -q --no-index "output/video-ingest/timeline.json"; then
+  pass "generated output files are ignored"
+else
+  fail "generated output files are not ignored"
 fi
 
 echo "=== Results: $PASS passed, $FAIL failed ==="

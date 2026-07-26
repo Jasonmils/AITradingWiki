@@ -1,127 +1,212 @@
-# Second Brain
+# AI Trading Wiki
 
-[中文使用指南](README.zh-CN.md)
+[中文部署与使用指南](README.zh-CN.md)
 
-An LLM-maintained personal knowledge base built on the [LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). Drop raw sources into a folder, let the LLM compile them into a structured wiki, and browse it all in Obsidian.
+AI Trading Wiki is a Codex-native, evidence-grounded investment-research vault
+designed for browsing in Obsidian. It turns immutable text, Markdown, PDF, and
+MP4 sources into linked Source, Entity, Concept, Event, Model, and Synthesis
+pages while preserving provenance and evidence classes.
+
+> Evidence → Object → Mechanism → Event → Model → Investment Judgment
+
+The repository includes all Codex skills, templates, integration scripts, and
+tests required for document ingestion, video preprocessing, wiki queries,
+quality audits, and one-security equity research. Local source files, secrets,
+model weights, caches, and generated video artifacts are intentionally excluded
+from Git.
 
 ![Second Brain Overview](docs/assets/second-brain-overview.png)
 
-## How It Works
+## Capabilities
 
-You feed raw material (articles, papers, notes, transcripts) into a `raw/` folder. The LLM reads everything, writes structured wiki pages, creates cross-references, and maintains an index. You browse the results in Obsidian — following links, exploring the graph view, and asking questions.
+| Workflow | Input or question | Entry point |
+|---|---|---|
+| Document ingest | Markdown, text, PDF, transcripts, research notes | `$second-brain-ingest` |
+| Video ingest | MP4 with local ASR, PPT detection/OCR, diarization, and DeepSeek text refinement | `$second-brain-ingest` |
+| Wiki query | Existing knowledge, claim comparison, or multi-security questions | `$second-brain-query` |
+| Wiki audit | Links, metadata, stale claims, evidence classes, Events, Models, and Entity Hubs | `$second-brain-lint` |
+| Equity dossier | One listed security, scenarios, valuation, thesis, and current-price tradability | `$equity-research` |
+| Vault setup | Initialize or repair a compatible investment-research vault | `$second-brain` |
 
-The LLM is the librarian. You're the curator.
+## Deploy from Git
 
-## Prerequisites
-
-- **[Obsidian](https://obsidian.md)** — the markdown editor you'll browse your wiki in
-- **An AI coding agent** — [Claude Code](https://claude.ai/code), [Codex](https://openai.com/codex), [Cursor](https://cursor.com), [Gemini CLI](https://github.com/google-gemini/gemini-cli), or any agent that supports [Agent Skills](https://agentskills.io)
-- **[Node.js](https://nodejs.org)** — required for installing the skills via npm
-
-## Install
-
-```bash
-npx skills add NicholasSpisak/second-brain
-```
-
-This installs four skills into your AI agent (Claude Code, Codex, Cursor, Gemini CLI, and 40+ others):
-
-| Skill | What it does |
-|---|---|
-| `$second-brain` | Set up a new vault (guided wizard) |
-| `$second-brain-ingest` | Process raw sources into wiki pages |
-| `$second-brain-query` | Ask questions against your wiki |
-| `$second-brain-lint` | Health-check the wiki |
-
-This Codex-native investment-research checkout adds a fifth repository skill:
-
-| Skill | What it does |
-|---|---|
-| `$equity-research` | Build or update one listed security's evidence-grounded research dossier |
-
-### Codex-native local checkout
-
-When this repository itself is the vault, run the idempotent setup script after cloning:
+### 1. Clone and expose the Codex project skills
 
 ```bash
+git clone https://github.com/Jasonmils/AITradingWiki.git
+cd AITradingWiki
 bash scripts/setup_codex.sh
 ```
 
-This initializes `raw/`, the expanded investment-research `wiki/`, `templates/`, and `output/`,
-then exposes five project skills at
-`.agents/skills/`, where Codex discovers repository-scoped skills. Start a new Codex task
-from the repository root after setup so the skills appear in the skill picker.
+Start a new Codex task from the repository root after setup. The script is
+idempotent: it creates the local vault structure and relative links under
+`.agents/skills/` without overwriting existing `raw/` or Wiki content.
 
-## Quick Start
+Open the same folder as an Obsidian vault if you want local browsing, backlinks,
+and graph view.
 
-1. **Install the skills** (see above)
-2. **Run the wizard:** invoke `$second-brain` in Codex — it walks you through naming, location, domain, and tooling
-3. **Install Web Clipper:** [Obsidian Web Clipper](https://chromewebstore.google.com/detail/obsidian-web-clipper/cnjifjpddelmedmihgijeibhnjfabmlf) — configure it to save to your vault's `raw/` folder
-4. **Open in Obsidian** — launch Obsidian, choose "Open folder as vault", select your vault folder
-5. **Clip your first article** to `raw/`, then invoke `$second-brain-ingest` — the LLM will discuss key takeaways and build wiki pages
-6. **Browse your wiki** in Obsidian — follow `[[wikilinks]]`, explore the graph view, check `wiki/index.md`
-7. **Keep going** — `$second-brain-query` to ask questions, `$equity-research` for a complete security dossier, and `$second-brain-lint` to health-check
+### 2. Optional: install the MP4 pipeline
 
-## What You Get
+Document and PDF ingestion needs no project API key. MP4 ingestion currently
+uses the macOS Video2Skill_Invest integration and requires:
 
-```
-your-vault/
-├── raw/                    # Your inbox — drop sources here
-│   └── assets/             # Images and attachments
-├── wiki/                   # LLM-maintained wiki
-│   ├── sources/            # One summary per ingested source
-│   ├── entities/           # People, orgs, products, tools
-│   ├── concepts/           # Ideas, frameworks, theories
-│   ├── events/             # Dated earnings, orders, transactions, and milestones
-│   ├── models/             # Forecasts, valuation, scenarios, and sensitivities
-│   ├── synthesis/          # Comparisons, analyses, themes
-│   ├── index.md            # Master catalog of all pages
-│   └── log.md              # Chronological operation record
-├── templates/              # Canonical empty wiki page structures
-├── output/                 # Reports and generated artifacts
-└── AGENTS.md               # Codex project guidance (varies by agent)
+- macOS;
+- Git;
+- Python 3.11 or 3.12;
+- an `HF_TOKEN` for the pyannote model;
+- a `DEEPSEEK_API_KEY` for transcript refinement.
+
+Install it with:
+
+```bash
+bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD"
 ```
 
-## Optional Tools
+The installer clones
+[Video2Skill_Invest](https://github.com/Jasonmils/Video2Skill_Invest) into the
+ignored `.work/tools/Video2Skill_Invest/` directory, installs its local
+environment, and creates:
 
-The wizard offers to install these. All optional but recommended:
+```text
+.env.video-ingest.local
+```
 
-- **[summarize](https://github.com/steipete/summarize)** — summarize links, files, and media from the CLI
-- **[qmd](https://github.com/tobi/qmd)** — local search engine for markdown files (useful as wiki grows)
-- **[agent-browser](https://github.com/vercel-labs/agent-browser)** — browser automation for web research
+Fill the two empty values in that local file:
 
-## FAQ
+```dotenv
+HF_TOKEN=
+DEEPSEEK_API_KEY=
+```
 
-**The wizard failed or I need to re-run setup.**
-Invoke `$second-brain` again — the onboarding script is idempotent. It won't overwrite existing files, so your data is safe. If you need a fresh start, delete the vault folder and re-run.
+Never commit or paste these values into a prompt. The video workflow processes
+the MP4, audio, and slide images locally. Only transcript text and relevant PPT
+OCR text are sent to DeepSeek after explicit curator approval.
 
-**I accidentally modified a file in `raw/`.**
-Restore the original immediately from Git history or re-clip the source, and do not continue editing it. Files in `raw/` are immutable evidence. If the restored file differs from the version previously ingested, treat it as a new dated source and review the affected wiki pages.
+## Ingest Sources
 
-**`wiki/index.md` is out of sync with actual pages.**
-Invoke `$second-brain-lint` — it checks index consistency and offers to fix mismatches.
+Put local sources in `raw/`. They are immutable evidence and ignored by Git by
+default.
 
-**Wikilinks are broken after renaming a page.**
-Invoke `$second-brain-lint` — it scans for broken `[[wikilinks]]` and reports which files need updating.
+### Markdown, text, PDF, transcripts, and notes
 
-**The wiki is getting large and queries are slow.**
-Install `qmd` (`npm i -g @tobilu/qmd`). The query skill uses it automatically when available. It provides fast hybrid search across your wiki files.
+```text
+$second-brain-ingest process raw/example-report.pdf.
 
-**Can I use this with multiple AI agents?**
-Yes. The wizard generates config files for each agent you select. They all follow the same wiki schema, so multiple agents can work on the same vault.
+Read the complete source, classify material claims, and show 3–5 takeaways,
+evidence risks, and proposed Wiki writes. Wait for my approval before writing.
+```
 
-**How do I handle images in clipped articles?**
-In Obsidian, set Settings → Files and links → Attachment folder path to `raw/assets/`. After clipping an article, use "Download attachments for current file" to save images locally.
+### MP4
 
-**How often should I lint?**
-After every 10 ingests or monthly — whichever comes first. Also run it before any major query or synthesis work.
+```text
+$second-brain-ingest process raw/example-course.mp4.
 
-## Based On
+Run MP4 preflight first. I allow transcript text and relevant PPT OCR text to
+be sent to DeepSeek; do not send the original video, audio, or slide images.
 
+After Video2Skill finishes, audit timeline coverage, ASR coverage, OCR gaps,
+and important unreadable slides. Use timeline.deepseek.html to show 3–5
+takeaways, evidence risks, and proposed Wiki pages. Wait for my approval before
+writing the Wiki.
+```
+
+MP4 ingestion keeps four provenance layers:
+
+1. immutable source MP4 in `raw/`;
+2. authoritative `timeline.json`;
+3. original ASR/OCR `timeline.html`;
+4. DeepSeek-refined `timeline.deepseek.html`.
+
+Generated video artifacts live under ignored `output/video-ingest/`. ASR, OCR,
+speaker mapping, and LLM edits remain derived evidence and are never promoted
+automatically to `verified_fact`.
+
+## Repository Layout
+
+```text
+AITradingWiki/
+├── .agents/skills/              # Relative links discovered by Codex
+├── skills/                      # Single editable source tree for five skills
+├── scripts/setup_codex.sh       # Idempotent project setup
+├── config/                      # Secret-free configuration examples
+├── templates/                   # Canonical Wiki page templates
+├── raw/                         # Local immutable evidence; ignored by Git
+├── output/                      # Local generated artifacts; ignored by Git
+├── wiki/
+│   ├── sources/
+│   ├── entities/
+│   ├── concepts/
+│   ├── events/
+│   ├── models/
+│   ├── synthesis/
+│   ├── index.md
+│   └── log.md
+├── tests/
+├── AGENTS.md
+└── README.zh-CN.md
+```
+
+## Update
+
+```bash
+git pull --ff-only
+bash scripts/setup_codex.sh
+```
+
+If the MP4 pipeline is installed:
+
+```bash
+bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD" update
+```
+
+The Video2Skill updater requires a clean upstream checkout and uses a
+fast-forward-only merge. It does not reset or overwrite local vault data.
+
+## Validate
+
+```bash
+bash tests/test_onboarding.sh
+bash tests/test_codex_compat.sh
+bash tests/test_video_ingest.sh
+git diff --check
+```
+
+## Git and Data Boundary
+
+Tracked:
+
+- Codex skills and metadata;
+- setup and video bridge scripts;
+- configuration examples;
+- templates and tests;
+- canonical Wiki pages, index, and append-only log.
+
+Local and ignored:
+
+- `raw/` source documents, videos, and attachments;
+- `.env*` secrets;
+- `.work/` tools, virtual environments, model weights, and caches;
+- `output/` generated reports and video artifacts.
+
+Before publishing a fork, review canonical Wiki pages for licensed, private, or
+personally identifying material. The default ignore rules protect raw files,
+but they cannot classify prose that has already been written into the Wiki.
+
+## Evidence Rules
+
+Material claims use one of:
+
+`verified_fact`, `company_statement`, `source_opinion`, `market_consensus`,
+`non_consensus`, `market_rumor`, `model_assumption`, `codex_inference`, or
+`disputed`.
+
+Certification, orders, delivery, recognized revenue, profit, and cash flow are
+separate milestones. Industry attractiveness, research priority, and
+tradability at the current price are also separate conclusions.
+
+## Acknowledgements
+
+- [NicholasSpisak/second-brain](https://github.com/NicholasSpisak/second-brain)
+- [Jasonmils/Video2Skill_Invest](https://github.com/Jasonmils/Video2Skill_Invest)
 - [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 - [Agent Skills open standard](https://agentskills.io)
-- [Blueprint & origin story](docs/REQUIREMENTS.md) — the founding document for this project
-
----
-
-<p align="center">Want to learn how to build projects like this with AI? Join the <a href="https://www.skool.com/buildwithai/about">Build With AI</a> community.</p>

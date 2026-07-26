@@ -22,24 +22,24 @@ expected_date: YYYY-MM-DD
 effective_date:
 ---
 
-# Event Title
+# 事件标题
 
-## Event Summary
+## 事件摘要
 
-## Timeline
+## 时间线
 
-| Date | Milestone | Event Status | Evidence |
+| 日期 | 里程碑 | 事件状态 | 证据 |
 |---|---|---|---|
 |  |  |  |  |
 
-## Confirmed Facts
+## 已确认事实
 
-## Company Statements
+## 公司陈述
 
-## Rumors or Disputed Claims
+## 传闻或争议性论断
 
-## Investment Relevance
+## 投资相关性
 
-## Next Verification
+## 下一步核验
 
-## Evidence Gaps and Invalidation Conditions
+## 证据缺口与失效条件

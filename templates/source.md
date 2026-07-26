@@ -13,30 +13,30 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
 
-# Source Title
+# 来源标题
 
-## Source Metadata
+## 来源元数据
 
-- Original file:
-- Source type:
-- Publisher or author:
-- Publication date:
-- Knowledge cutoff:
+- 原始文件：
+- 来源类型：
+- 出版机构或作者：
+- 发布日期：
+- 知识截止日：
 
-## Summary
+## 摘要
 
-## Key Assertions
+## 关键论断
 
-| Assertion | Evidence Type | As Of | Evidence | Confidence | Invalidation Condition |
+| 论断 | 证据类型 | 截止日 | 证据 | 置信度 | 失效条件 |
 |---|---|---|---|---|---|
 |  |  |  |  |  |  |
 
-## Entities
+## 实体
 
-## Concepts
+## 概念
 
-## Events
+## 事件
 
-## Models or Assumptions Mentioned
+## 提及的模型或假设
 
-## Evidence Gaps and Conflicts
+## 证据缺口与冲突

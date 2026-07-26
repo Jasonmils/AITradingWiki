@@ -5,15 +5,16 @@ This is the canonical schema for the investment-research vault. Apply it when cr
 ## Contents
 
 1. Architecture
-2. Canonical metadata
-3. Evidence classification
-4. Page responsibilities
-5. Entity Hub and research coverage
-6. Event rules
-7. Model rules
-8. Investment thesis rules
-9. Index and log
-10. Staleness, conflicts, and invalidation
+2. Language conventions
+3. Canonical metadata
+4. Evidence classification
+5. Page responsibilities
+6. Entity Hub and research coverage
+7. Event rules
+8. Model rules
+9. Investment thesis rules
+10. Index and log
+11. Staleness, conflicts, and invalidation
 
 ## Architecture
 
@@ -33,6 +34,15 @@ Maintain the research chain:
 - `output/`: non-canonical reports and generated artifacts.
 
 Do not organize top-level directories by market, asset view, or horizon. Represent those attributes in metadata.
+
+## Language conventions
+
+- Canonical Wiki page titles, headings, prose, table headers, index descriptions, and newly appended log entries should be written primarily in Chinese unless the curator requests another language.
+- Retain English for legal company names, tickers and exchange-prefixed identifiers, official product/source titles, metadata keys and enums, evidence labels, units, acronyms, and domain-specific terms whose English form is more precise or commonly queried.
+- Common retained terms include CPO, OCS, ASIC, XPU, DSP, FAU, ELS, BoM, TAM, EPS, NPO, SiPh, EML, CW laser, MOCVD, scale-up, scale-out and scale-across. Add a concise Chinese explanation at first use when useful.
+- Do not force-translate an English proper noun or technical term when that would introduce ambiguity. Preserve exact source wording when the wording is itself material evidence.
+- Translation must preserve every number, date, period, currency, unit, source, attribution, confidence, invalidation condition and evidence type. Never upgrade or downgrade evidence because of translation.
+- Keep kebab-case filenames and machine-readable frontmatter stable. Use Chinese readable titles and Chinese display text in `[[target|中文标题]]` wikilinks.
 
 ## Canonical metadata
 

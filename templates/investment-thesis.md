@@ -18,38 +18,38 @@ horizon: 1-3m | 6-12m | 12-24m | 3-5y
 review_after: YYYY-MM-DD
 ---
 
-# Company Investment Thesis
+# 公司投资论点
 
-## Conclusion and Knowledge Cutoff
+## 结论与知识截止日
 
-## Current Company Status
+## 公司当前状态
 
-## Verified Facts
+## 已验证事实
 
-## Market Consensus
+## 市场共识
 
-## Non-Consensus View
+## 非共识观点
 
-## Codex Inference
+## Codex 推断
 
-## Core Debate
+## 核心争议
 
-## Bull Scenario
+## 乐观情景
 
-## Base Scenario
+## 基准情景
 
-## Bear Scenario
+## 悲观情景
 
-## Catalysts and Expected Timing
+## 催化剂与预计时间
 
-## Principal Risks
+## 主要风险
 
-## Thesis Invalidation Conditions
+## 论点失效条件
 
-## Monitoring Indicators
+## 跟踪指标
 
-## Valuation and Tradability at the Current Price
+## 估值与当前价格可交易性
 
-## Evidence Gaps and Conflicting Sources
+## 证据缺口与冲突来源
 
-## Thesis Change Log
+## 论点变更记录

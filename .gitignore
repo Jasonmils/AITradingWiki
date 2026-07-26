@@ -7,6 +7,9 @@ node_modules/
 *.pem
 *.key
 credentials*
+/.work/
+/output/
+/raw/
 
 # npx skills install artifacts
 # Keep the Codex-native project skills in .agents/skills under version control.

@@ -14,47 +14,47 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
 
-# Entity Name
+# 实体名称
 
-## Identity
+## 身份信息
 
-- Legal name:
-- Security:
-- Exchange:
-- Primary ticker:
-- Other identifiers:
+- 法定名称：
+- 证券：
+- 交易所：
+- 主证券代码：
+- 其他标识符：
 
-## Current Status
+## 当前状态
 
-## Business Segments
+## 业务板块
 
-## Ownership and Governance
+## 所有权与治理
 
-## Products and Technology
+## 产品与技术
 
-## Customers, Suppliers, and Value Chain
+## 客户、供应商与价值链
 
-## Financial Profile
+## 财务概况
 
-## Research Coverage
+## 研究覆盖
 
-| Research Module | Status | As Of | Main Gap |
+| 研究模块 | 状态 | 截止日 | 主要缺口 |
 |---|---|---|---|
-| Company and security | unverified | YYYY-MM-DD |  |
-| Ownership and governance | unverified | YYYY-MM-DD |  |
-| Business segments | unverified | YYYY-MM-DD |  |
-| Industry and competition | unverified | YYYY-MM-DD |  |
-| Products and technology | unverified | YYYY-MM-DD |  |
-| Customers and suppliers | unverified | YYYY-MM-DD |  |
-| Historical financials | unverified | YYYY-MM-DD |  |
-| Financial model | unverified | YYYY-MM-DD |  |
-| Valuation | unverified | YYYY-MM-DD |  |
-| Investment thesis | unverified | YYYY-MM-DD |  |
+| 公司与证券 | unverified | YYYY-MM-DD |  |
+| 所有权与治理 | unverified | YYYY-MM-DD |  |
+| 业务板块 | unverified | YYYY-MM-DD |  |
+| 行业与竞争 | unverified | YYYY-MM-DD |  |
+| 产品与技术 | unverified | YYYY-MM-DD |  |
+| 客户与供应商 | unverified | YYYY-MM-DD |  |
+| 历史财务 | unverified | YYYY-MM-DD |  |
+| 财务模型 | unverified | YYYY-MM-DD |  |
+| 估值 | unverified | YYYY-MM-DD |  |
+| 投资论点 | unverified | YYYY-MM-DD |  |
 
-## Linked Events
+## 关联事件
 
-## Linked Models
+## 关联模型
 
-## Linked Syntheses
+## 关联综合研究
 
-## Evidence Gaps and Conflicts
+## 证据缺口与冲突
