@@ -5,7 +5,11 @@ Master catalog of all wiki pages. Updated on every ingest.
 ## Sources
 
 - [[goldman-sachs-global-tech-optical-networking-2026-04-17|高盛全球科技：光网络（2026-04-17）]] — Source；`as_of: 2026-04-17`；关于 AI 光网络、CPO、硅光与 OCS 的第三方卖方报告。
+- [[2026-04-28-where-did-the-bearish-case-go|说好的利空去哪儿了？（2026-04-28）]] — Source；`as_of: 2026-04-28`；悲观预期检验、中国宏观韧性、供给能力、货币政策与中证 500 的课程观点。
+- [[2026-05-07-ai-evolution|AI 进化论（2026-05-07）]] — Source；`as_of: 2026-05-07`；大模型、Agent、算力效率、中美 AI 产业差异与 AI+制造的课程观点。
 - [[2026-07-14-china-commercial-space-ambition-and-weakness|中国商业航天：雄心与软肋（2026-07-14）]] — Source；`as_of: 2026-07-14`；商业航天商业闭环、可复用火箭、产业软肋与太空算力的课程访谈。
+- [[2026-07-15-from-price-hikes-to-expansion|从涨价到扩产：半导体设备、零部件与国产算力]] — Source；`as_of: 2026-07-15`（推定）；从存储涨价转向扩产链、成熟制程与国产超节点的来源观点。
+- [[2026-07-20-contradiction-and-rationality|矛盾和理性（2026-07-20）]] — Source；`as_of: 2026-07-20`；市场流动性、AI/存储周期与中国叙事切换的课程观点。
 
 ## Entities
 

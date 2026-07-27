@@ -26,18 +26,21 @@ as_of: 2026-07-14
 sources:
   - "raw/26.07.14-第十二课.mp4"
 created: 2026-07-26
-updated: 2026-07-26
+updated: "2026-07-26"
 source_sha256: "1cc28ba4571ae838e0084d9cf788ef18639a740571fb539e3b047a1c9798ec54"
 source_duration_ms: 9162385
 video2skill_revision: "62dd8d0c2e3b5bdc13af66543bb15746a91d1aaf"
 ingest_input_sha256: "3f274fe783ad52d21f6dd9600e14a62db9e5d26e9cb61eefb008a6d2ca34aa72"
+source_file_status: "deleted_after_confirmed_ingest"
+source_deleted_at: "2026-07-26"
+video_ingest_manifest: "output/video-ingest/manifests/26.07.14-第十二课-1cc28ba4571a.json"
 ---
 
 # 中国商业航天：雄心与软肋（2026-07-14）
 
 ## 来源元数据
 
-- 原始文件：`raw/26.07.14-第十二课.mp4`
+- 原始文件（终态清理后已删除）：`raw/26.07.14-第十二课.mp4`
 - 视频首页标题：中国商业航天：雄心与软肋
 - 来源类型：投资课程/多人访谈视频
 - 课程标识：文件名为“26.07.14-第十二课”；本页将其解释为 2026-07-14，尚未用独立发布记录核验
@@ -51,12 +54,12 @@ ingest_input_sha256: "3f274fe783ad52d21f6dd9600e14a62db9e5d26e9cb61eefb008a6d2ca
 
 ## 证据链与处理边界
 
-本次摄入保留四层证据：
+摄入与审阅阶段曾保留四层证据；存储终态清理后保留来源哈希、两份 HTML 和 manifest：
 
-1. 不可变原始视频：`raw/26.07.14-第十二课.mp4`
-2. 权威结构化时间轴：`output/video-ingest/production/jobs/26.07.14-e2ff39fa43c2d950/output/timeline.json`
-3. 原始 ASR/OCR 页面：`output/video-ingest/production/jobs/26.07.14-e2ff39fa43c2d950/output/timeline.html`
-4. DeepSeek 精炼页面：`output/video-ingest/production/jobs/26.07.14-e2ff39fa43c2d950/output/timeline.deepseek.html`
+1. 原始视频：`raw/26.07.14-第十二课.mp4`（已删除；SHA-256 保留在本页和 manifest）
+2. 权威结构化时间轴：`output/video-ingest/production/jobs/26.07.14-e2ff39fa43c2d950/output/timeline.json`（已删除；删除前 SHA-256 保留在 manifest）
+3. 原始 ASR/OCR 页面：`output/video-ingest/transcripts/26.07.14-第十二课-1cc28ba4571a/timeline.html`
+4. DeepSeek 精炼页面：`output/video-ingest/transcripts/26.07.14-第十二课-1cc28ba4571a/timeline.deepseek.html`
 
 DeepSeek 只接收转录文字和相关 PPT OCR 文字，没有接收原始视频、音频或幻灯片图片。ASR、OCR、说话人分离和 DeepSeek 改写都是派生证据，不能自动升级为 `verified_fact`。
 
@@ -68,7 +71,7 @@ DeepSeek 只接收转录文字和相关 PPT OCR 文字，没有接收原始视�
 - DeepSeek 页面展示 349 个 turn，覆盖 346/385 个原始 ASR segment。省略文字约占原始转录字符的 7.87%，人工复核后主要是开场安排、致谢、重复词和识别噪声，没有发现改变核心研究结论的遗漏。
 - 检出 20 个 PPT 状态，20/20 OCR 成功且均有非空核心文字。第 14、15、17 页属于同一卫星成本页的短暂构建版本。
 - 第 6、8、9、11、20 页的小字号图例、坐标轴或装饰文字存在低置信 OCR；第 20 页微小流程图标签不宜直接引用。没有发现整页不可读的重要页面。
-- 一份在本次运行中产生、受 OCR 提示污染并重复出现数字的 ASR 检查点已被拒绝。随后复用了来源视频、音频哈希、参数和代码版本一致的干净 ASR 缓存，并重新执行对齐、说话人分离、时间轴渲染和 DeepSeek 精炼。复用依据记录在 `output/video-ingest/production/jobs/26.07.14-e2ff39fa43c2d950/transcript/asr-checkpoint-reuse.json`。
+- 一份在本次运行中产生、受 OCR 提示污染并重复出现数字的 ASR 检查点已被拒绝。随后复用了来源视频、音频哈希、参数和代码版本一致的干净 ASR 缓存，并重新执行对齐、说话人分离、时间轴渲染和 DeepSeek 精炼。终态清理前的复用依据与哈希已汇总到 `output/video-ingest/manifests/26.07.14-第十二课-1cc28ba4571a.json`；原检查点随处理中间文件删除。
 
 ## 摘要
 
@@ -152,7 +155,15 @@ DeepSeek 只接收转录文字和相关 PPT OCR 文字，没有接收原始视�
 5. **时间敏感性**：2026 年 7 月的 IPO、估值、订单、监管通道、发射和回收状态必须用一手来源重新核验。
 6. **统计口径冲突**：课程自身指出商业发射次数可能因是否纳入国家队、搭载和不同任务定义而得到不同结果。
 7. **可比性限制**：不同功能、轨道、寿命和载荷的卫星成本不能直接比较；不同国家的发射体系也不能只比较民营公司。
-8. **DeepSeek 改写风险**：精炼页面会压缩、重写或保留少量 ASR 错词。任何数字、专名和原话必须回到 `timeline.json`、原始 HTML 和 PPT 画面。
+8. **DeepSeek 改写风险与终态证据限制**：精炼页面会压缩、重写或保留少量 ASR 错词。终态清理后仅保留原始 ASR/OCR HTML 与 DeepSeek HTML，`timeline.json` 和 PPT 帧已删除；数字、专名和原话只能回到保留的原始 HTML，并将无法复核画面的事项继续列为证据缺口。
 9. **已记录的转录校正**：派生时间轴中的“长征十号Z”由策展人校正为“长征十号乙完成回收”；原派生产物保持不变，以保留审计链。
 10. **OCR 缺口**：第 20 页小字号流程图标签不可安全引用；第 12、13、19 页虽然整体可读，但其内容仍是二手汇总。
 11. **里程碑严格分离**：研发、首飞、入轨、回收、再次使用、航班化、订单、交付、收入、利润和现金流不能互相替代。
+
+## 本地存储终态
+
+- 原始 MP4：已于 2026-07-26 在转录与 Wiki 摄入确认后删除；原路径为 `raw/26.07.14-第十二课.mp4`，SHA-256 为 `1cc28ba4571ae838e0084d9cf788ef18639a740571fb539e3b047a1c9798ec54`。
+- 保留原始 ASR/OCR HTML：`output/video-ingest/transcripts/26.07.14-第十二课-1cc28ba4571a/timeline.html`。
+- 保留 DeepSeek 精炼 HTML：`output/video-ingest/transcripts/26.07.14-第十二课-1cc28ba4571a/timeline.deepseek.html`。
+- 结构化时间轴与处理缓存已删除；删除前 `timeline.json` 的 SHA-256 为 `e2ebdf35f96e1f110979b6dcfc2b138eb5a453afcb762ad2a6342d896c14e455`。
+- 终态清理记录：`output/video-ingest/manifests/26.07.14-第十二课-1cc28ba4571a.json`。
