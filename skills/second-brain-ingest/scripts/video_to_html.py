@@ -58,8 +58,15 @@ def _read_env_names(path: Path) -> set[str]:
 
 def _git_revision(tool_root: Path) -> str:
     try:
-        completed = subprocess.run(
+        revision = subprocess.run(
             ["git", "-C", str(tool_root), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        status = subprocess.run(
+            ["git", "-C", str(tool_root), "status", "--porcelain"],
             check=True,
             capture_output=True,
             text=True,
@@ -67,7 +74,8 @@ def _git_revision(tool_root: Path) -> str:
         )
     except (OSError, subprocess.SubprocessError):
         return "unknown"
-    return completed.stdout.strip() or "unknown"
+    value = revision.stdout.strip() or "unknown"
+    return value + ("-dirty" if status.stdout.strip() else "")
 
 
 def _extract_result(payload: Any) -> dict[str, Any]:
@@ -261,6 +269,47 @@ def main(argv: list[str] | None = None) -> int:
     for artifact in (final_html, original_html, timeline_json):
         if not artifact.is_file() or artifact.stat().st_size == 0:
             raise BridgeError(f"required Video2Skill artifact is unavailable: {artifact}")
+    optional_artifacts: dict[str, str] = {}
+    for manifest_name, artifact_names in (
+        ("performance_json", ("performance_run", "performance")),
+        (
+            "refinement_prefetch_json",
+            ("refinement_prefetch_run", "refinement_prefetch"),
+        ),
+    ):
+        raw_path = next(
+            (
+                artifacts.get(name)
+                for name in artifact_names
+                if isinstance(artifacts.get(name), str)
+            ),
+            None,
+        )
+        if not isinstance(raw_path, str):
+            continue
+        candidate = Path(raw_path).expanduser().resolve()
+        if candidate.is_file() and candidate.stat().st_size > 0:
+            if manifest_name == "refinement_prefetch_json":
+                try:
+                    prefetch = json.loads(candidate.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    raise BridgeError(
+                        "refinement prefetch audit is invalid: "
+                        f"{candidate}"
+                    ) from exc
+                if not isinstance(prefetch, dict):
+                    raise BridgeError(
+                        "refinement prefetch audit is not a JSON object"
+                    )
+                if (
+                    prefetch.get("status") == "completed"
+                    and prefetch.get("input_matches_final") is not True
+                ):
+                    raise BridgeError(
+                        "refinement prefetch input does not match the "
+                        "authoritative timeline"
+                    )
+            optional_artifacts[manifest_name] = candidate.as_posix()
 
     generated_at = datetime.now(timezone.utc).isoformat()
     manifest = {
@@ -271,6 +320,7 @@ def main(argv: list[str] | None = None) -> int:
         "original_transcript_html": original_html.as_posix(),
         "ingest_input_html": final_html.as_posix(),
         "ingest_input_sha256": _sha256(final_html),
+        **optional_artifacts,
         "video2skill_result": {
             key: result.get(key)
             for key in (
@@ -278,6 +328,7 @@ def main(argv: list[str] | None = None) -> int:
                 "status",
                 "stage",
                 "refinement_status",
+                "refinement_prefetch_status",
             )
             if key in result
         },

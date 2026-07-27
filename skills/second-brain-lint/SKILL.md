@@ -12,7 +12,9 @@ Audit the wiki without silently repairing or filling research gaps.
 1. Read `wiki/index.md`.
 2. Scan Markdown files in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, `wiki/events/`, `wiki/models/`, and `wiki/synthesis/`.
 3. Read `../second-brain/references/wiki-schema.md`.
-4. Keep `raw/` immutable.
+4. Keep non-video `raw/` sources immutable. Treat a missing MP4 as valid only
+   when its Source page and completed cleanup manifest record an audited
+   post-ingest deletion.
 
 ## Structural checks
 

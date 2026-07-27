@@ -22,7 +22,9 @@ Maintain the research chain:
 
 > Evidence → Object → Mechanism → Event → Model → Investment Judgment
 
-- `raw/`: immutable source documents. Read but never edit, move, rename, or delete them.
+- `raw/`: source inbox. Non-video documents are immutable. Keep an MP4
+  byte-for-byte until its transcript and Canonical Wiki ingest are confirmed;
+  then only the audited video-finalization workflow may delete that exact MP4.
 - `raw/assets/`: immutable images and attachments referenced by sources.
 - `wiki/sources/`: factual summaries of individual sources.
 - `wiki/entities/`: normalized companies, securities, subsidiaries, people, customers, suppliers, products, and tools.

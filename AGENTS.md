@@ -22,7 +22,10 @@ Maintain this chain without collapsing its layers:
 >
 > 证据 → 对象 → 机制 → 事件 → 模型 → 投资判断
 
-- `raw/`: immutable source inbox. Never edit, rename, move, or delete its files.
+- `raw/`: source inbox. Non-video sources are immutable. An MP4 remains immutable
+  until transcription, artifact validation, Canonical Wiki ingestion, and log
+  registration are complete; only the audited video-finalization workflow may
+  then delete that exact MP4 after explicit curator confirmation.
 - `raw/assets/`: immutable source images and attachments.
 - `wiki/sources/`: what one source explicitly states.
 - `wiki/entities/`: normalized companies, securities, subsidiaries, people, customers, suppliers, products, and tools.
@@ -42,7 +45,9 @@ Do not create top-level folders for markets, bullish/bearish views, or time hori
 ## Codex workflows
 
 - `$second-brain`: initialize or repair an investment-research vault; do not re-onboard this vault unless asked.
-- `$second-brain-ingest`: ingest immutable raw sources after a 3–5 takeaway and evidence-risk preview.
+- `$second-brain-ingest`: ingest raw sources after a 3–5 takeaway and
+  evidence-risk preview; for confirmed MP4 ingests, finalize local storage only
+  after the Canonical Wiki write is complete.
 - `$second-brain-query`: answer existing-wiki questions and multi-security comparisons, wiki first and read-only by default.
 - `$second-brain-lint`: audit structure and research integrity; report before fixing.
 - `$equity-research`: build or update a complete dossier for one publicly traded security; ask before saving.
@@ -106,7 +111,11 @@ Keep these milestones distinct unless each transition is independently evidenced
 
 ## Investment-research rules
 
-1. Preserve every source in `raw/` exactly as received.
+1. Preserve every source in `raw/` exactly as received during ingestion.
+   Non-video sources remain permanent. An MP4 may be deleted only after its
+   completed manifest, source SHA-256, retained original/refined transcript
+   HTML, Canonical Source page, and append-only log entry have all been
+   verified, and the curator explicitly confirms finalization.
 2. Keep Source pages faithful to the source. Put Codex interpretation in Concept or Synthesis pages.
 3. Put dated corporate changes in Event pages and projections or valuation assumptions in Model pages.
 4. Preserve every number's period, date, currency, units, and source.

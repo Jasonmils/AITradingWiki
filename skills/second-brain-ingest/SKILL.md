@@ -1,15 +1,20 @@
 ---
 name: second-brain-ingest
-description: Process immutable documents or MP4 videos from raw/ into evidence-classified Source, Entity, Concept, Event, and Model wiki updates. Use when the user asks to ingest, import, process, transcribe, or summarize raw files, videos, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", "摄入财报", "处理视频", or "摄入 MP4". For MP4, run Video2Skill_Invest to produce a DeepSeek-refined HTML before normal ingestion. Preserve originals and present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, or a complete single-stock dossier.
+description: Process documents or MP4 videos from raw/ into evidence-classified Source, Entity, Concept, Event, and Model wiki updates. Use when the user asks to ingest, import, process, transcribe, summarize, or finalize storage for raw files, videos, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", "摄入财报", "处理视频", "摄入 MP4", or "视频转成 Wiki 后删除源文件". For MP4, run Video2Skill_Invest to produce a DeepSeek-refined HTML before normal ingestion, preserve the video through the Wiki approval gate, and delete it only through audited finalization after explicit curator confirmation. Present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, or a complete single-stock dossier.
 ---
 
 # Second Brain — Ingest
 
-Convert immutable raw evidence into selective, interlinked investment-research pages.
+Convert raw evidence into selective, interlinked investment-research pages.
 
 ## Guardrails
 
-- Never edit, rename, move, or delete anything in `raw/` or `raw/assets/`.
+- Never edit, rename, move, or delete non-video files in `raw/` or anything in
+  `raw/assets/`.
+- Keep an MP4 byte-for-byte through preprocessing, evidence review, and the
+  Canonical Wiki write. Delete it only with
+  `scripts/finalize_video_ingest.py` after the curator explicitly confirms
+  storage finalization.
 - Treat a file specified by the user as the source. Otherwise compare files directly under `raw/` with ingest entries in `wiki/log.md`; exclude `raw/assets/`.
 - Read the source completely. Inspect referenced images only when they carry material evidence.
 - Read `../second-brain/references/wiki-schema.md` before planning writes.
@@ -19,12 +24,15 @@ Convert immutable raw evidence into selective, interlinked investment-research p
 
 For an `.mp4` source, read `references/video-ingest.md` and follow it before Phase 1:
 
-1. Keep the original MP4 unchanged under `raw/`.
+1. Keep the original MP4 unchanged under `raw/` until the post-Wiki storage
+   finalization gate.
 2. Run the bundled bridge preflight. If the upstream checkout or dependencies are missing, propose the one-time setup command; installation may download code, packages, and model weights, so obtain approval before running it.
 3. Explain that local stages process the media, while DeepSeek receives transcript text and relevant PPT OCR text only. Wait for explicit approval before remote processing.
 4. Run the bridge with `--allow-remote-processing` only after approval.
 5. Require non-empty `timeline.json`, original `timeline.html`, refined `timeline.deepseek.html`, and the bridge manifest. Audit transcript/OCR coverage and important unreadable slides before extracting claims.
 6. Use the manifest's `ingest_input_html` as the Phase 1 reading source. Preserve provenance to every evidence layer and classify ASR/OCR/LLM-derived assertions conservatively.
+7. Do not delete the MP4 merely because rendering succeeded. Complete Phase 1,
+   obtain Wiki-write approval, finish Phase 2, and register the ingest first.
 
 Do not start Phase 1 or write the Wiki if conversion, refinement, artifact validation, or coverage review fails.
 
@@ -95,6 +103,27 @@ Use this log form:
 Processed source-file. Created: [...]. Updated: [...]. Evidence risks: [...].
 ```
 
+## MP4 storage finalization
+
+After Phase 2, read `references/video-ingest.md` and use the bundled finalizer.
+
+1. Run `--check-only` against the completed bridge manifest and Canonical Source
+   page.
+2. Require all checks to pass: exact MP4 SHA-256, completed manifest, nonempty
+   original/refined HTML, Source-page provenance, and an ingest entry in
+   `wiki/log.md`.
+3. Show the exact MP4, retained HTML paths, processing directory, and estimated
+   reclaimed bytes. Obtain explicit curator confirmation if it was not already
+   given for this exact cleanup.
+4. Run `--confirm-delete-source-video`. By default the command archives the
+   original and DeepSeek-refined transcript HTML, deletes the exact source MP4,
+   removes the heavyweight production job, updates the Source page and manifest,
+   and appends a maintenance log entry.
+5. Use `--keep-intermediates` only when the curator wants to retain local audio,
+   frames, OCR, timeline JSON, and other resumable checkpoints.
+6. Never substitute a guessed path, glob, broad directory, or manually issued
+   recursive deletion for the finalizer.
+
 ## Report
 
 Return:
@@ -105,5 +134,7 @@ Return:
 - Events and Models created or changed;
 - conflicts, rumors, stale information, and missing evidence;
 - items deliberately not promoted into standalone pages.
+- MP4 storage status, retained transcript paths, and reclaimed space when
+  finalization was executed.
 
 Suggest `$second-brain-query`, `$equity-research`, or `$second-brain-lint` as the appropriate next workflow.

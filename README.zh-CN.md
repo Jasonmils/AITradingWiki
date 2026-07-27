@@ -131,7 +131,7 @@ AITradingWiki/
 │   ├── model.md
 │   ├── investment-thesis.md
 │   └── monitoring.md
-├── raw/                         # 只增不改的原始资料
+├── raw/                         # 本地来源；已完成 MP4 可审计清理
 │   └── assets/                  # 图片、图表和附件
 ├── wiki/
 │   ├── sources/                 # 单份资料的事实摘要
@@ -264,7 +264,9 @@ NASDAQ:NVDA
 
 把 Markdown、纯文本、PDF 财报/研报、MP4 视频、电话会转录稿和会议记录放进 `raw/`。网页可通过 Obsidian Web Clipper 保存到 `raw/`，图片和附件放到 `raw/assets/`。
 
-不要编辑、移动、改名或删除已经放入 `raw/` 的文件。
+普通文档与 `raw/assets/` 永久保持只读。MP4 在转录、覆盖率审计、Canonical
+Wiki 写入和 ingest log 登记完成前同样不可编辑、移动、改名或删除；完成后只能
+通过下述终态清理命令删除。
 
 ### 2. 摄入普通资料
 
@@ -327,12 +329,44 @@ Video2Skill 完成后，先审计时间轴、转录覆盖、OCR 缺口和重要�
 等我第二次确认后，才写入 Wiki。
 ```
 
-视频流程有两道确认：
+视频流程有三道确认：
 
 1. 远程处理确认：允许 DeepSeek 接收派生文字；
 2. Wiki 写入确认：审阅 3–5 个结论和证据风险后才修改 canonical 页面。
+3. 存储终态确认：Wiki 已写入并登记后，核对源视频、SHA-256、保留 HTML
+   和预计释放空间，再删除该视频。
 
-原始 MP4 始终保留在 `raw/`。本地 ASR/OCR 的权威时间轴、原始 HTML、DeepSeek HTML 和 provenance manifest 位于 `output/video-ingest/`，属于可再生成的非 canonical 产物。Wiki Source 页面应同时记录原始 MP4、`timeline.json`、`timeline.html` 和 `timeline.deepseek.html`，不能把 ASR、OCR 或 DeepSeek 修订自动标成 `verified_fact`。
+在 Wiki 写入完成前，原始 MP4、权威时间轴、原始 HTML、DeepSeek HTML 和
+provenance manifest 均保留。Wiki Source 页面应先记录这四层来源，不能把
+ASR、OCR 或 DeepSeek 修订自动标成 `verified_fact`。
+
+先检查一个已完成视频是否满足清理条件：
+
+```bash
+python3 skills/second-brain-ingest/scripts/finalize_video_ingest.py \
+  output/video-ingest/manifests/example-0123456789ab.json \
+  --vault-root "$PWD" \
+  --source-page wiki/sources/example.md \
+  --check-only
+```
+
+只有当输出为 `status=eligible`，并确认显示的是正确 MP4、Source 页面、
+SHA-256、两个保留 HTML 路径和预计释放空间后，才执行：
+
+```bash
+python3 skills/second-brain-ingest/scripts/finalize_video_ingest.py \
+  output/video-ingest/manifests/example-0123456789ab.json \
+  --vault-root "$PWD" \
+  --source-page wiki/sources/example.md \
+  --confirm-delete-source-video
+```
+
+终态清理会把 `timeline.html` 与 `timeline.deepseek.html` 保存到
+`output/video-ingest/transcripts/<video>-<sha12>/`，保留小型 manifest 作为
+审计凭证，删除精确匹配的源 MP4，并删除该视频占空间较大的音频、帧、OCR、
+时间轴和其他处理中间文件。它还会更新 Source 页的存储状态并追加
+`wiki/log.md`。如需保留可恢复的中间文件，在命令末尾添加
+`--keep-intermediates`。
 
 ### 4. 摄入财报
 
@@ -490,7 +524,8 @@ Model 至少在适用时覆盖：
 
 ## 核心知识规则
 
-1. `raw/` 和 `raw/assets/` 只读。
+1. 普通 `raw/` 文档和 `raw/assets/` 永久只读；MP4 仅能在完成转录、
+   Canonical Wiki 摄入、日志登记和策展人终态确认后，由审计清理命令删除。
 2. Source 只保存资料明确表达的内容。
 3. Event 保存财报、订单、认证、并购、控制权和资产注入等变化。
 4. Model 保存预测、估值、情景和敏感性。

@@ -3,9 +3,10 @@
 [中文部署与使用指南](README.zh-CN.md)
 
 AI Trading Wiki is a Codex-native, evidence-grounded investment-research vault
-designed for browsing in Obsidian. It turns immutable text, Markdown, PDF, and
-MP4 sources into linked Source, Entity, Concept, Event, Model, and Synthesis
-pages while preserving provenance and evidence classes.
+designed for browsing in Obsidian. It turns immutable text, Markdown, and PDF
+sources plus locally staged MP4 videos into linked Source, Entity, Concept,
+Event, Model, and Synthesis pages while preserving provenance and evidence
+classes.
 
 > Evidence → Object → Mechanism → Event → Model → Investment Judgment
 
@@ -84,8 +85,9 @@ OCR text are sent to DeepSeek after explicit curator approval.
 
 ## Ingest Sources
 
-Put local sources in `raw/`. They are immutable evidence and ignored by Git by
-default.
+Put local sources in `raw/`. They are ignored by Git by default. Documents and
+attachments remain immutable; an MP4 remains immutable until its transcript,
+coverage audit, Canonical Wiki write, and ingest log are complete.
 
 ### Markdown, text, PDF, transcripts, and notes
 
@@ -110,9 +112,9 @@ takeaways, evidence risks, and proposed Wiki pages. Wait for my approval before
 writing the Wiki.
 ```
 
-MP4 ingestion keeps four provenance layers:
+MP4 ingestion initially keeps four provenance layers:
 
-1. immutable source MP4 in `raw/`;
+1. source MP4 in `raw/`;
 2. authoritative `timeline.json`;
 3. original ASR/OCR `timeline.html`;
 4. DeepSeek-refined `timeline.deepseek.html`.
@@ -120,6 +122,24 @@ MP4 ingestion keeps four provenance layers:
 Generated video artifacts live under ignored `output/video-ingest/`. ASR, OCR,
 speaker mapping, and LLM edits remain derived evidence and are never promoted
 automatically to `verified_fact`.
+
+After the Wiki write has been explicitly approved and completed, check whether
+one exact video is eligible for storage finalization:
+
+```bash
+python3 skills/second-brain-ingest/scripts/finalize_video_ingest.py \
+  output/video-ingest/manifests/example-0123456789ab.json \
+  --vault-root "$PWD" \
+  --source-page wiki/sources/example.md \
+  --check-only
+```
+
+After confirming the reported MP4, Source page, hashes, retained HTML, and
+reclaimable bytes, replace `--check-only` with
+`--confirm-delete-source-video`. The finalizer retains `timeline.html`,
+`timeline.deepseek.html`, and a small audit manifest; it deletes the exact MP4
+and that video's heavyweight local processing job. Add `--keep-intermediates`
+when resumable audio, frames, OCR, or timeline JSON must remain.
 
 ## Repository Layout
 
@@ -130,7 +150,7 @@ AITradingWiki/
 ├── scripts/setup_codex.sh       # Idempotent project setup
 ├── config/                      # Secret-free configuration examples
 ├── templates/                   # Canonical Wiki page templates
-├── raw/                         # Local immutable evidence; ignored by Git
+├── raw/                         # Local source inbox; ignored by Git
 ├── output/                      # Local generated artifacts; ignored by Git
 ├── wiki/
 │   ├── sources/
