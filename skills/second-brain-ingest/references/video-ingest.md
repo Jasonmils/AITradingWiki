@@ -22,11 +22,20 @@ Use this reference only for an MP4 source.
 - Derived transcript/OCR display plus DeepSeek input and output are normalized
   to Simplified Chinese with OpenCC `t2s`; authoritative raw ASR/OCR JSON
   remains unchanged for audit.
+- The default refinement profile is cost-aware:
+  `deepseek-v4-flash`, non-thinking mode, a compact optional-field response
+  schema, and a bounded output allowance. Use the upstream explicit quality
+  profile only for selected high-risk review; do not make V4-Pro
+  Thinking=max the batch default.
 - Require `metadata/performance.json` and
   `metadata/refinement_prefetch.json` when the upstream result advertises
   those artifacts. A completed prefetch must report
   `input_matches_final=true`; a failed prefetch may be retried only from the
   authoritative final timeline.
+- Audit `provider_details`, `successful_remote_usage`, and `request_metrics`
+  when present. These distinguish local response-cache reuse from successful
+  remote work. Provider billing remains authoritative because a response
+  completed remotely but lost during transport can still be charged.
 - Require explicit curator approval before adding `--allow-remote-processing`.
 - Treat ASR, OCR, speaker mapping, and DeepSeek edits as derived evidence. Never promote them automatically to `verified_fact`.
 - Use `timeline.deepseek.html` for semantic ingestion. Record links to the
@@ -90,6 +99,12 @@ The command returns JSON. Continue Phase 1 using `ingest_input_html`. Record the
 4. DeepSeek-refined `timeline.deepseek.html`.
 
 Generated, non-canonical artifacts stay under `output/video-ingest/`. The manifest records the source SHA-256, derived HTML SHA-256, upstream Git revision, configurations, and artifact paths.
+
+Changing provider, model, prompt protocol, thinking mode, or output limit
+creates a new response-cache identity. Existing v2/v3 cache files remain
+untouched, but they do not satisfy the cost-aware v4 request. Never add
+`--force` or `--refresh` merely to adopt the new default for an already
+complete report.
 
 ## Post-Wiki storage finalization
 

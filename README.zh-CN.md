@@ -78,20 +78,49 @@ bash tests/test_video_ingest.sh
 git diff --check
 ```
 
-### 4. 更新代码
+### 4. 从旧版本安全升级
+
+在 AITradingWiki 仓库根目录先检查本地状态，正常升级不得覆盖尚未提交的
+研究页面或代码：
 
 ```bash
+git status --short
+git remote get-url origin
+
 git pull --ff-only
 bash scripts/setup_codex.sh
 ```
 
-如果已安装 MP4 流水线，再执行：
+预期 `origin` 是 `https://github.com/Jasonmils/AITradingWiki.git`。如果
+`git status --short` 有输出，先提交或另行备份；不要把
+`git reset --hard`、`git checkout --` 当成升级手段。fast-forward
+被拒绝表示本地和远端历史需要人工审阅。
+
+Vault 更新完成后，如果已安装 MP4 流水线，再执行：
 
 ```bash
+git -C .work/tools/Video2Skill_Invest status --short
 bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD" update
 ```
 
-Video2Skill 更新只接受干净的上游 checkout，并使用 fast-forward-only；不会 reset、移动 `raw/` 或覆盖 Wiki。
+Video2Skill 更新只接受干净的上游 checkout，并使用 fast-forward-only；
+它会刷新嵌入式 Python 环境，但不会删除 `.env.video-ingest.local`、
+`raw/`、Wiki、模型权重、视频缓存或已有报告。如果上面的嵌入仓库状态
+命令有输出，应先保留修改，不能强制升级。
+
+升级后验证：
+
+```bash
+bash tests/test_codex_compat.sh
+bash tests/test_video_ingest.sh
+git -C .work/tools/Video2Skill_Invest log -1 --oneline
+.work/tools/Video2Skill_Invest/.venv/bin/python -m pip check
+```
+
+当前默认精炼配置是低成本
+`deepseek-v4-flash + Thinking=disabled`。旧 v2/v3 响应缓存仍保留在
+本地，但缓存身份不同；不要为了“完成升级”对已有完整报告添加
+`--refresh`。
 
 ## Git 与本地数据边界
 

@@ -166,21 +166,51 @@ AITradingWiki/
 └── README.zh-CN.md
 ```
 
-## Update
+## Update from an older version
+
+Start from the AITradingWiki repository root. Check local work first; a normal
+upgrade must not overwrite uncommitted research or code:
 
 ```bash
+git status --short
+git remote get-url origin
+
 git pull --ff-only
 bash scripts/setup_codex.sh
 ```
 
-If the MP4 pipeline is installed:
+The expected `origin` is `https://github.com/Jasonmils/AITradingWiki.git`. If
+`git status --short` prints anything, commit or back up those changes before
+pulling. Do not use `git reset --hard` or `git checkout --` as an upgrade
+shortcut. A rejected fast-forward means the histories need manual review.
+
+If the MP4 pipeline is installed, update it only after the Vault update
+completes:
 
 ```bash
+git -C .work/tools/Video2Skill_Invest status --short
 bash skills/second-brain-ingest/scripts/setup_video2skill.sh "$PWD" update
 ```
 
 The Video2Skill updater requires a clean upstream checkout and uses a
-fast-forward-only merge. It does not reset or overwrite local vault data.
+fast-forward-only merge. It refreshes the embedded Python environment without
+deleting `.env.video-ingest.local`, `raw/`, Wiki pages, model weights, video
+caches, or completed reports. If the embedded status command prints anything,
+preserve those changes first instead of forcing the update.
+
+Confirm the upgraded installation:
+
+```bash
+bash tests/test_codex_compat.sh
+bash tests/test_video_ingest.sh
+git -C .work/tools/Video2Skill_Invest log -1 --oneline
+.work/tools/Video2Skill_Invest/.venv/bin/python -m pip check
+```
+
+The current default refinement profile is cost-aware
+`deepseek-v4-flash + Thinking=disabled`. Existing v2/v3 response caches remain
+on disk but have a different cache identity; do not add `--refresh` merely to
+finish an upgrade.
 
 ## Validate
 
