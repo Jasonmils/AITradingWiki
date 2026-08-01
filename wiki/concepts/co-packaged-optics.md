@@ -13,6 +13,8 @@ tickers:
   - "NASDAQ:NVDA"
   - "NASDAQ:AVGO"
   - "NASDAQ:MRVL"
+  - "NASDAQ:INTC"
+  - "NASDAQ:CSCO"
 markets:
   - US
 asset_classes:
@@ -24,11 +26,19 @@ industries:
 themes:
   - AI infrastructure
   - co-packaged optics
-as_of: 2026-04-17
+as_of: 2026-07-28
 sources:
   - "[[goldman-sachs-global-tech-optical-networking-2026-04-17|高盛全球科技：光网络（2026-04-17）]]"
+  - "[[oif-co-packaging-framework-01-0|OIF Co-Packaging Framework 01.0]]"
+  - "[[oif-co-packaging-3-2t-module-01-0|OIF 3.2Tb/s CPO Module Implementation Agreement 01.0]]"
+  - "[[oif-elsfp-02-0|OIF ELSFP Implementation Agreement 02.0]]"
+  - "[[cw-wdm-msa-technical-specifications-rev-1-0|CW-WDM MSA 技术规范 Rev 1.0（2021-06-04）]]"
+  - "[[broadcom-200g-lane-cpo-2025-05-15|Broadcom 第三代 200G/lane CPO（2025-05-15）]]"
+  - "[[cisco-cpo-system-ofc-2023-03-07|Cisco OFC 2023 CPO 系统演示（2023-03-07）]]"
+  - "[[marvell-1-6t-silicon-photonics-light-engine-2025-03-31|Marvell 1.6T 硅光光引擎（2025-03-31）]]"
+  - "[[intel-fully-integrated-optical-io-chiplet-2024-06-26|Intel 全集成 Optical I/O Chiplet（2024-06-26）]]"
 created: 2026-07-24
-updated: 2026-07-24
+updated: 2026-07-28
 ---
 
 # 共封装光学（CPO）
@@ -37,7 +47,9 @@ updated: 2026-07-24
 
 来源报告中的 CPO 全称为 **Co-Packaged Optics（共封装光学）**：将光引擎放置在交换 ASIC 附近并与其共同封装，后续架构还可能与 XPU 共同封装。其目标是把电气路径从厘米级缩短到毫米级，并让更多高带宽连接进入光域。
 
-本页记录[[goldman-sachs-global-tech-optical-networking-2026-04-17|高盛全球科技：光网络（2026-04-17）]]所描述的机制，不代表已经独立验证的行业标准。
+本页结合[[goldman-sachs-global-tech-optical-networking-2026-04-17|高盛来源报告]]与 OIF 一手框架/IA。OIF 文件验证架构与接口，但不验证任何公司的市场份额、量产、订单或收入。
+
+后续公司一手资料进一步表明，CPO 需要与 LPO/on-board optics 和 XPU optical I/O 分开。完整归一化见[[cpo-technology-routes-and-product-generations|CPO 技术路线与产品代际]]。
 
 ## 报告描述的架构
 
@@ -64,6 +76,15 @@ updated: 2026-07-24
 | NPO/on-board optics | 光引擎位于交换机 PCB 上 | 故障可能需要更换交换机 PCB | 中间形态的集成路线 | source_opinion |
 | CPO with switch | 光引擎与交换 ASIC 共封装 | 故障可能影响交换 ASIC | 初期商业化 CPO 路线 | source_opinion |
 | CPO with XPU | 光引擎与 GPU/CPU/NPU 等 XPU 共封装 | 故障可能影响高价值 XPU | 后续 scale-up 路线；时间尚不明确 | source_opinion |
+
+### 一手产品路线补充
+
+- Cisco 2023 系统演示把 3.2T optical tile 放到交换 ASIC 附近，并采用 external laser source。
+- Broadcom 公开代际从 Gen 1 供应链学习、Gen 2 100G/lane 到 Gen 3 200G/lane，Gen 4 400G/lane 仍属于 roadmap。
+- Marvell 1.6T 8×200G engine 是 LPO/on-board 形态，公司称其为 6.4T CPO engine 的四分之一规模版本。
+- Intel OCI 与 Ayar Labs TeraPHY 属 XPU/compute optical I/O 路线；前者为 prototype，后者公开规格 preliminary 且处于 EVT/DVT 路径。
+
+这些带宽、产品层级和阶段不能合并为一个“CPO 出货量”。
 
 ## 采用驱动因素
 
@@ -128,13 +149,35 @@ updated: 2026-07-24
 | 报告预计 CPO with switch 先于 CPO with XPU。 | source_opinion | 2026-04-17 | 来源报告第 14–16 页 | medium | XPU CPO 先于交换机 CPO 实现规模商业部署。 |
 | 可插拔光模块、NPO 和 CPO 将长期共存。 | source_opinion | 2026-04-17 | 来源报告第 16 页 | medium | 其中一条路线显著更快地取代其他路线。 |
 | 高价值平台情景采用 25%–29% 的 scale-out CPO 渗透率。 | model_assumption | 2026-04-17 | 来源报告第 7–11 页 | low | 实际平台组合和客户认证与假设不同。 |
+| Cisco 展示 3.2T tile 的 CPO system，并称可移除额外 DSP。 | company_statement | 2023-03-07 | [[cisco-cpo-system-ofc-2023-03-07|Cisco 来源]] | medium | 正式产品或同口径系统测试不支持。 |
+| Marvell 1.6T engine 可用于 LPO/on-board，并被公司定义为后续 CPO 基础。 | company_statement | 2025-03-31 | [[marvell-1-6t-silicon-photonics-light-engine-2025-03-31|Marvell 来源]] | medium | 客户采用不同路线或产品未商业化。 |
+| Intel 4Tbps 双向 OCI 是工作原型，不是量产产品。 | verified_fact | 2024-06-26 | [[intel-fully-integrated-optical-io-chiplet-2024-06-26|Intel 来源]] | high | 后续正式产品状态替代。 |
 
 ## 关联实体与事件
 
 - [[nvidia|NVIDIA Corporation（英伟达）]]
 - [[broadcom|Broadcom Inc.（博通）]]
 - [[marvell-technology|Marvell Technology, Inc.（迈威尔科技）]]
+- [[intel-corporation|Intel Corporation（英特尔）]]
+- [[cisco-systems|Cisco Systems, Inc.（思科）]]
+- [[ayar-labs|Ayar Labs]]
 - [[cpo-switch-commercialization-roadmap-2025-2027|CPO 交换机商业化路线图（2025–2027）]]
+- [[coherent|Coherent Corp.]]
+- [[lumentum|Lumentum Holdings Inc.]]
+- [[fabrinet|Fabrinet]]
+- [[tfc-communication|天孚通信]]
+- [[innolight|中际旭创]]
+- [[robotechnik-ficontec|罗博特科与 ficonTEC]]
+
+## 研究框架
+
+- [[cpo-commercialization-evidence-stages|CPO 商业化证据分层]]
+- [[cpo-value-chain-and-company-exposure|CPO 价值链与公司暴露度]]
+- [[cpo-reliability-and-external-laser-source|CPO 可靠性与外置激光源（ELS）]]
+- [[cpo-customer-concentration-and-revenue-double-counting|CPO 客户集中度与产业链重复计量]]
+- [[cpo-technology-routes-and-product-generations|CPO 技术路线与产品代际]]
+- [[cpo-optical-engine-components-cost-and-margin|CPO 光引擎组成、成本与利润]]
+- [[cpo-product-architecture-cost-and-margin-model-2026-2031|CPO 产品架构、成本与利润模型（2026–2031）]]
 
 ## 跟踪指标
 
@@ -148,7 +191,9 @@ updated: 2026-07-24
 
 ## 证据缺口与冲突
 
-- 未摄入系统功耗、延迟、热、良率或可靠性的一手证据。
-- 产品和客户路线图属于二手公司陈述或高盛推断。
+- 已摄入 OIF 架构与接口规范，但现场功耗、热、良率和可靠性仍缺少公开一手数据。
+- 已补充厂商产品代际、LPO 与 XPU optical I/O 路线，但 performance 和 cost 数据仍主要是 `company_statement`。
+- 产品和客户路线图已有部分公司一手声明，仍缺客户验收和可勾稽收入。
+- 公开资料未披露可审计的 CPO 单品 ASP、BoM、composite yield、毛利或 RMA。
 - 第 17 页 BoM、markup 和售价之间存在内部算术不一致。
 - 认证、订单、交付、收入、利润和现金流不可互相替代。

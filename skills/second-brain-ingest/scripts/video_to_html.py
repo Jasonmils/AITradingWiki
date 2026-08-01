@@ -88,6 +88,26 @@ def _extract_result(payload: Any) -> dict[str, Any]:
     return payload
 
 
+def _decode_json_result(stdout: str) -> Any:
+    """Decode a JSON result while tolerating library notices before it."""
+    stripped = stdout.strip()
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError as direct_error:
+        decoder = json.JSONDecoder()
+        for index, character in enumerate(stdout):
+            if character not in "[{":
+                continue
+            try:
+                payload, end = decoder.raw_decode(stdout[index:])
+            except json.JSONDecodeError:
+                continue
+            if stdout[index + end :].strip():
+                continue
+            return payload
+        raise direct_error
+
+
 def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -246,7 +266,7 @@ def main(argv: list[str] | None = None) -> int:
             f"Video2Skill failed with exit code {completed.returncode}: {detail}"
         )
     try:
-        result = _extract_result(json.loads(completed.stdout))
+        result = _extract_result(_decode_json_result(completed.stdout))
     except json.JSONDecodeError as exc:
         raise BridgeError(
             "Video2Skill did not return valid JSON: " + completed.stdout[-1000:]

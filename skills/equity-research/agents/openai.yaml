@@ -1,4 +1,4 @@
 interface:
   display_name: "Equity Research"
-  short_description: "Build and update evidence-grounded stock dossiers"
-  default_prompt: "Use $equity-research to build or update a complete evidence-grounded stock research dossier."
+  short_description: "Build and archive one evidence-grounded equity dossier"
+  default_prompt: "Use $equity-research to build and archive one market-aware security dossier, then ask before any Canonical Wiki write."

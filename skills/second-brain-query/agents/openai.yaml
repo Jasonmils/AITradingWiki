@@ -1,4 +1,4 @@
 interface:
   display_name: "Second Brain Query"
-  short_description: "Query the wiki with evidence and currentness checks"
-  default_prompt: "Use $second-brain-query to answer from the wiki with evidence labels, cutoff dates, and citations."
+  short_description: "Answer wiki questions across technology and investment"
+  default_prompt: "Use $second-brain-query to answer from the wiki first and add only the current verification required by the selected research track."

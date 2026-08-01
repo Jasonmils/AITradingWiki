@@ -33,6 +33,12 @@ TEMPLATES=(
   model.md
   investment-thesis.md
   monitoring.md
+  concept.md
+  trend-thesis.md
+  technology-model.md
+  commercialization-model.md
+  industry-opportunity-map.md
+  technology-monitoring.md
 )
 
 if [ -d "$TEMPLATE_SOURCE" ]; then
@@ -73,9 +79,15 @@ Master catalog of all wiki pages. Updated on every ingest.
 
 ## Synthesis
 
+## Trend Theses
+
+## Opportunity Maps
+
 ## Active Theses
 
 ## Monitoring
+
+## Technology Monitoring
 EOF
   echo "Created wiki/index.md" >&2
 else
@@ -156,7 +168,13 @@ cat << JSONEOF
     "templates/event.md",
     "templates/model.md",
     "templates/investment-thesis.md",
-    "templates/monitoring.md"
+    "templates/monitoring.md",
+    "templates/concept.md",
+    "templates/trend-thesis.md",
+    "templates/technology-model.md",
+    "templates/commercialization-model.md",
+    "templates/industry-opportunity-map.md",
+    "templates/technology-monitoring.md"
   ],
   "tools": $TOOLS_JSON
 }

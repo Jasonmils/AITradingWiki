@@ -1,19 +1,22 @@
 # AI Trading Wiki 中文使用指南
 
-AI Trading Wiki 是一个面向二级市场投资研究的 Codex Second Brain。
+AI Trading Wiki 是一个面向 AI 前沿科技学习、商业化与产业机会追踪、二级市场投资研究的 Codex Second Brain。
 
-Codex 负责读取原始资料、维护结构化 Wiki、建立公司与产业之间的关联、更新财务模型、跟踪投资论点并回答问题；Obsidian 负责浏览、搜索、反向链接和图谱展示。
+Codex 负责读取原始资料、维护结构化 Wiki、学习技术机制、追踪技术成熟度与商业化、建立公司与产业之间的关联、更新模型、跟踪投资论点并回答问题；Obsidian 负责浏览、搜索、反向链接和图谱展示。
 
 本仓库包含文本、Markdown、PDF 和 MP4 摄入所需的 Codex Skills、模板、视频桥接脚本、配置示例与测试。通过 Git 克隆即可部署代码；原始资料、API Key、模型权重、缓存和生成的时间轴默认只保留在本地，不进入 Git。
 
-系统将投资研究拆成六层：
+系统使用一条不允许跳级的研究链：
 
-> 证据 → 对象 → 机制 → 事件 → 模型 → 投资判断
+> 证据 → 对象 → 机制 → 技术成熟度 → 商业化 → 产业价值池 → 公司暴露 → 模型 → 投资判断
 
 目标不是简单保存研报，而是持续回答：
 
 - 公司经营什么业务，增长来自哪里？
 - 哪些是已验证事实，哪些是公司表述、作者观点或市场传闻？
+- 技术路线解决什么问题，Benchmark 是否可比，是否有独立复现？
+- 技术处于研究、原型、试点、生产还是规模采用阶段？
+- 客户为什么付费，价值由谁创造、又由谁获取？
 - 市场共识和非共识分别是什么？
 - 财务预测依赖哪些假设？
 - 哪些事件可以验证或推翻投资论点？
@@ -34,7 +37,7 @@ bash scripts/setup_codex.sh
 - 创建缺失的 `raw/`、`wiki/`、`templates/` 和 `output/` 目录；
 - 保留已有原始资料、Wiki 页面、索引和日志；
 - 在 `.agents/skills/` 建立指向 `skills/` 的相对链接；
-- 让 Codex 从仓库根目录发现五个项目技能。
+- 让 Codex 从仓库根目录发现九个项目技能。
 
 脚本完成后，从仓库根目录新建一个 Codex 任务或重启 Codex。需要 Obsidian 浏览时，将同一目录作为 Vault 打开。
 
@@ -74,11 +77,46 @@ DEEPSEEK_API_KEY=
 ```bash
 bash tests/test_onboarding.sh
 bash tests/test_codex_compat.sh
+bash tests/test_frontier_research.sh
+bash tests/test_equity_research_report.sh
+bash tests/test_skill_naming.sh
 bash tests/test_video_ingest.sh
 git diff --check
 ```
 
-### 4. 从旧版本安全升级
+### 4. 可选：部署增强版 A 股研究流水线
+
+A 股研究数据 Skill 不需要 iWenCai，也不需要 API Key。它会区分接口失败
+和真实空结果；第三方事件、财务、一致预期和新闻数据只作为发现或交叉核对
+证据，重大事实仍需回查正式公告或定期报告。
+
+安装隔离技术环境和固定 revision 的公开版 chan.py：
+
+```bash
+bash skills/a-share-technical-analysis/scripts/setup_env.sh
+```
+
+只读运行示例：
+
+```bash
+python3 skills/a-share-research-data/scripts/research_snapshot.py \
+  --ticker SSE:600519 --modules d1,d2,d3,d4
+
+.work/venvs/a-share-ta/bin/python \
+  skills/a-share-technical-analysis/scripts/technical_snapshot.py \
+  --ticker SSE:600519
+```
+
+两类报告都只写入 `output/`。技术流程让 CZSC 和 chan.py 使用同一份标准化
+K 线，并保留未确认、已撤销结构和 BSP 候选；BSP 不会被自动转换为交易指令。
+默认技术运行还会生成一张综合审计图，以及固定 chan.py 的 strict profile
+月线、周线和日线三张静态图，展示蜡烛图、缠论结构、中性 BSP 标记与 MACD；
+analysis manifest 会记录每张图的 SHA-256。使用 `--no-native-chan-charts`
+可仅保留综合图，使用 `--no-audit-chart` 可禁用全部图片。
+生命周期 state 只接受 `complete` 行情，并在分析产物生成后提交；同 stem 的
+`.state-commit.json` 会记录最终提交结果。
+
+### 5. 从旧版本安全升级
 
 在 AITradingWiki 仓库根目录先检查本地状态，正常升级不得覆盖尚未提交的
 研究页面或代码：
@@ -126,7 +164,7 @@ git -C .work/tools/Video2Skill_Invest log -1 --oneline
 
 Git 跟踪：
 
-- 五个 Codex Skills 及其 metadata；
+- 九个 Codex Skills 及其 metadata；
 - 初始化脚本、视频桥接脚本和配置示例；
 - Canonical Wiki 模板与验证测试；
 - Canonical Wiki 页面、`wiki/index.md` 和 append-only `wiki/log.md`。
@@ -152,23 +190,33 @@ AITradingWiki/
 │   ├── second-brain-ingest/
 │   ├── second-brain-query/
 │   ├── second-brain-lint/
-│   └── equity-research/
+│   ├── equity-research/
+│   ├── a-share-research-data/
+│   ├── a-share-technical-analysis/
+│   ├── frontier-tech-research/
+│   └── technology-to-investment/
 ├── templates/
 │   ├── source.md
 │   ├── entity.md
 │   ├── event.md
 │   ├── model.md
 │   ├── investment-thesis.md
-│   └── monitoring.md
+│   ├── monitoring.md
+│   ├── concept.md
+│   ├── trend-thesis.md
+│   ├── technology-model.md
+│   ├── commercialization-model.md
+│   ├── industry-opportunity-map.md
+│   └── technology-monitoring.md
 ├── raw/                         # 本地来源；已完成 MP4 可审计清理
 │   └── assets/                  # 图片、图表和附件
 ├── wiki/
 │   ├── sources/                 # 单份资料的事实摘要
-│   ├── entities/                # 公司、证券、子公司、客户、产品等
-│   ├── concepts/                # 产业机制、技术路线、指标和风险框架
-│   ├── events/                  # 财报、订单、认证、并购和交易进度
-│   ├── models/                  # 财务预测、估值、情景和敏感性
-│   ├── synthesis/               # 投资论点、比较、判断和复盘
+│   ├── entities/                # 公司、实验室、模型、产品、标准、证券等
+│   ├── concepts/                # 技术机制、产业结构、指标和风险框架
+│   ├── events/                  # 发布、复现、试点、部署、订单、财报等
+│   ├── models/                  # 技术、商业化、财务、估值和敏感性
+│   ├── synthesis/               # 趋势论点、机会地图、投资论点和监控
 │   ├── index.md
 │   └── log.md
 └── output/                      # 非 canonical 报告和其他输出
@@ -180,12 +228,12 @@ AITradingWiki/
 
 | 页面类型 | 主要作用 | 典型内容 |
 |---|---|---|
-| Source | 保存单份资料明确表达的内容 | 财报摘要、电话会、研报、新闻 |
-| Entity | 建立规范化研究对象 | 公司、证券、子公司、客户、供应商、产品 |
-| Concept | 保存可以跨标的复用的机制 | 库存周期、技术路线、经营杠杆 |
-| Event | 保存有时间和完成状态的变化 | 财报、订单、认证、并购、资产注入 |
-| Model | 保存假设和计算过程 | 收入预测、利润、估值、情景和敏感性 |
-| Synthesis | 形成投资判断 | 投资论点、行业比较、风险判断、复盘 |
+| Source | 保存单份资料明确表达的内容 | 论文、代码仓库、产品文档、财报、研报、新闻 |
+| Entity | 建立规范化研究对象 | 公司、实验室、人物、模型、产品、标准、证券 |
+| Concept | 保存可以跨对象复用的机制 | 架构、算法、Benchmark、技术路线、产业机制 |
+| Event | 保存有时间和完成状态的变化 | 发布、复现、试点、部署、订单、财报、监管 |
+| Model | 保存假设和计算过程 | 技术趋势、商业化、单位经济、财务、估值 |
+| Synthesis | 形成跨来源判断 | 趋势论点、机会地图、行业比较、投资论点、复盘 |
 
 不要按照“A股、港股、美股”“看多、看空”建立顶层目录。市场、观点和期限会变化，应使用元数据表达。
 
@@ -197,21 +245,34 @@ AITradingWiki/
 /path/to/AITradingWiki
 ```
 
-2. 升级后新建一个 Codex 任务或重启 Codex，使其重新发现五个项目技能。
+2. 升级后新建一个 Codex 任务或重启 Codex，使其重新发现九个项目技能。
 3. 打开 Obsidian，选择 **Open folder as vault**，打开同一个目录。
 4. 在 **Settings → Files and links → Attachment folder path** 中填写 `raw/assets/`。
 
-## 五个 Codex 技能
+## 九个 Codex Skills
 
-| 技能 | 用途 |
-|---|---|
-| `$second-brain` | 初始化或修复另一个投资研究 Vault |
-| `$second-brain-ingest` | 将不可变原始资料摄入 Wiki |
-| `$second-brain-query` | 基于已有 Wiki 问答或比较多个标的 |
-| `$second-brain-lint` | 审计结构、时效性和研究完整性 |
-| `$equity-research` | 为一个上市证券建立或更新完整研究档案 |
+| English Display Name | Canonical 调用 | 用途 |
+|---|---|---|
+| Second Brain Setup | `$second-brain` | 初始化或修复研究 Vault |
+| Second Brain Ingest | `$second-brain-ingest` | 将不可变原始资料摄入 Wiki |
+| Second Brain Query | `$second-brain-query` | 基于已有 Wiki 问答或比较多个标的 |
+| Second Brain Lint | `$second-brain-lint` | 审计结构、时效性和研究完整性 |
+| Equity Research | `$equity-research` | 为一个上市证券建立或更新完整研究档案 |
+| A-Share Research Data | `$a-share-research-data` | 获取带来源、时间、单位和质量状态的 A 股研究数据 |
+| A-Share Technical Analysis | `$a-share-technical-analysis` | 使用 BaoStock/AkShare 质量门与 CZSC × chan.py 生成月、周、日结构审计 |
+| Frontier Tech Research | `$frontier-tech-research` | 学习一个前沿技术主题，核验路线、Benchmark、成熟度、瓶颈和里程碑 |
+| Technology to Investment | `$technology-to-investment` | 把技术趋势映射到商业化、产业价值池、公司暴露和后续证券研究 |
 
-显式使用 `$技能名` 最可靠。自然语言也可以触发，但完整单标的研究、模型更新或“现在是否值得建仓”应明确调用 `$equity-research`。
+Skill 名称只使用英文。流程调用必须使用表中的 canonical 标识符，不能翻译、
+改大小写、插入空格或创建别名。中文只用于解释用途。自然语言也可以触发，
+但完整单标的研究、模型更新或“现在是否值得建仓”应明确调用
+`$equity-research`。
+
+每次 `$equity-research` 进入交付阶段后，包括结论状态为 `partial` 或
+`blocked` 的研究，系统都会自动把完整 Markdown 报告保存到
+`output/equity-research/`。该报告属于非 Canonical 可再生成产物；Entity、
+Event、Model、投资论点、监控、`wiki/index.md` 和 `wiki/log.md` 的正式写入
+仍须获得策展人明确批准。
 
 ## 统一元数据
 
@@ -227,6 +288,7 @@ markets: []
 asset_classes: []
 industries: []
 themes: []
+research_tracks: []
 as_of: YYYY-MM-DD
 sources: []
 created: YYYY-MM-DD
@@ -247,6 +309,28 @@ review_after: YYYY-MM-DD
 - `as_of`：数据和判断有效到哪一天。
 - `review_after`：最晚什么时候需要重新核验。
 - `status`：观点或模型目前是否仍然有效。
+
+`research_tracks` 可以包含：
+
+- `technology`：问题、机制、竞争路线、Benchmark、成熟度、瓶颈和里程碑；
+- `commercialization`：产品、客户采用、付费、单位经济性、产业链和价值捕获；
+- `investment`：公司财务暴露、估值、催化剂、风险和当前价格可交易性。
+
+适用时使用：
+
+```yaml
+entity_type: company | security | lab | person | product | model | standard | project | tool
+concept_type: technology | architecture | metric | industry_mechanism | business_framework
+model_type: technology_trend | commercialization | unit_economics | financial | valuation
+synthesis_type: trend_thesis | opportunity_map | monitoring | investment_thesis | comparison | post_mortem
+
+technology_horizon: 0-2y | 2-5y | 5-10y | 10y+
+technology_maturity: research | prototype | independently_reproduced | pilot | production | scaled
+commercialization_stage: none | demo | poc | paid_pilot | order | delivery | revenue | profit | fcf
+```
+
+非上市技术实体不需要伪造 ticker、交易所或会计准则。技术成熟度和商业化
+阶段必须引用证据；无法证明阶段晋级时，应保留在较早阶段或标记为争议。
 
 证券代码使用交易所前缀，例如：
 
@@ -409,7 +493,38 @@ $second-brain-ingest 处理 raw/公司名称-2026Q2财报.pdf。
 company_statement，不要当作已经实现的结果。
 ```
 
-### 5. 建立单个股票研究档案
+### 5. 研究一个前沿技术主题
+
+```text
+$frontier-tech-research 研究 Agentic AI 未来 2–5 年的发展趋势。
+
+先读取 Wiki，再核验最新论文、代码仓库、Model Card、官方产品文档、
+Benchmark 和独立复现。统一模型、任务、数据集、硬件、软件、精度和
+工作负载后再比较。
+
+输出技术机制、竞争路线、当前成熟度、主要瓶颈、关键未知项、保守/基准/
+乐观路径、未来 6–24 个月里程碑和失效条件。先给报告；保存趋势论点前
+等待我的批准。
+```
+
+技术发布、独立复现、原型、试点、生产部署和规模采用必须分开记录。
+
+### 6. 从技术趋势映射产业机会
+
+```text
+$technology-to-investment 把 [[技术趋势论点]] 映射为产业机会。
+
+分析客户问题、产品边界、买方/用户/付款方、采用阶段、单位经济性、
+产业链瓶颈、议价权和价值池。把公司暴露分为 direct、indirect、
+optionality、spurious 或 disputed。
+
+分别说明技术受益、商业化可信度、公司收入/利润/FCF 重要性、后续证券
+研究优先级；不要直接得出当前价格值得交易。
+```
+
+Demo/POC、付费试点、订单、交付、收入、利润和 FCF 必须逐级有证据。
+
+### 7. 建立单个股票研究档案
 
 ```text
 $equity-research 为 SZSE:300767 建立完整研究档案。
@@ -427,7 +542,7 @@ $equity-research 为 SZSE:300767 建立完整研究档案。
 
 该技能默认先交付研究报告和拟写页面清单，得到同意后才更新 Entity Hub、Event、Model、Synthesis、index 和 log。
 
-### 6. 查询单个标的的已有观点
+### 8. 查询单个标的的已有观点
 
 ```text
 $second-brain-query 我的知识库对 NASDAQ:NVDA 的当前判断是什么？
@@ -448,7 +563,7 @@ $second-brain-query 我的知识库对 NASDAQ:NVDA 的当前判断是什么？
 
 如果问题要求完整建档、更新模型或判断当前是否建仓，应改用 `$equity-research`。
 
-### 7. 比较多个股票
+### 9. 比较多个股票
 
 ```text
 $second-brain-query 比较 NVDA、AVGO 和 AMD 的 AI 基础设施暴露。
@@ -459,7 +574,7 @@ $second-brain-query 比较 NVDA、AVGO 和 AMD 的 AI 基础设施暴露。
 区分已验证事实、共识、非共识和 Codex 推断。
 ```
 
-### 8. 更新投资论点
+### 10. 更新投资论点
 
 ```text
 $equity-research 更新 [[公司名称-投资论点-2026H2]]。
@@ -477,7 +592,7 @@ $equity-research 更新 [[公司名称-投资论点-2026H2]]。
 
 旧论点不能删除，应保留用于复盘。
 
-### 9. 运行健康检查
+### 11. 运行健康检查
 
 ```text
 $second-brain-lint 检查以下问题，先报告，不要直接修复：
@@ -493,7 +608,12 @@ $second-brain-lint 检查以下问题，先报告，不要直接修复：
 9. 财务模型与最新财报不一致；
 10. 投资论点缺少催化剂、风险、指标或失效条件；
 11. 失效观点没有标记 invalidated；
-12. Entity Hub 缺少关键研究模块。
+12. Entity Hub 缺少关键研究模块；
+13. 论文、代码、Benchmark、专利或产品发布缺少版本和比较边界；
+14. 公司 Benchmark 被直接写成 verified_fact；
+15. 技术发布、独立复现、原型、试点、生产和规模采用被混为一谈；
+16. 趋势论点缺少竞争路线、关键未知项、里程碑或失效条件；
+17. 机会地图把技术受益直接等同于公司利润或股票机会。
 ```
 
 建议每摄入 10 份资料、每月至少一次、财报后、重大投资决策前和论点更新前运行。
@@ -556,9 +676,9 @@ Model 至少在适用时覆盖：
 1. 普通 `raw/` 文档和 `raw/assets/` 永久只读；MP4 仅能在完成转录、
    Canonical Wiki 摄入、日志登记和策展人终态确认后，由审计清理命令删除。
 2. Source 只保存资料明确表达的内容。
-3. Event 保存财报、订单、认证、并购、控制权和资产注入等变化。
-4. Model 保存预测、估值、情景和敏感性。
-5. Synthesis 保存投资论点、比较、判断和复盘。
+3. Event 保存发布、复现、试点、部署、采用、财报、订单、认证、并购等变化。
+4. Model 保存技术、商业化、单位经济、财务、估值、情景和敏感性。
+5. Synthesis 保存趋势论点、机会地图、投资论点、比较、监控和复盘。
 6. 每个数字保留日期、期间、币种、单位和来源。
 7. 冲突资料并列记录，不静默覆盖。
 8. 所有当前性结论标明 `as_of`。
@@ -566,6 +686,9 @@ Model 至少在适用时覆盖：
 10. 当前价格、最新财报、订单、认证和交易进度必须重新核验。
 11. 不把行业空间直接等同于公司收入或当前价格的交易机会。
 12. 不因业务优质而忽略上市公司持股比例和少数股东权益。
+13. 不把论文发布等同于独立复现，不把专利或 Demo 等同于可规模部署。
+14. 不把 POC 等同于付费订单，不把公司产业链关联等同于财务重要性。
+15. 不把技术吸引力、商业化可信度、公司受益和当前价格可交易性混为一谈。
 
 ## 验证和维护
 
@@ -580,6 +703,11 @@ bash scripts/setup_codex.sh
 ```bash
 bash tests/test_onboarding.sh
 bash tests/test_codex_compat.sh
+bash tests/test_a_share_research_data.sh
+bash tests/test_a_share_technical_analysis.sh
+bash tests/test_frontier_research.sh
+bash tests/test_equity_research_report.sh
+bash tests/test_skill_naming.sh
 bash tests/test_video_ingest.sh
 ```
 

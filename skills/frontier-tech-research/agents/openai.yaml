@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontier Tech Research"
+  short_description: "Study frontier technology evidence, maturity, and milestones"
+  default_prompt: "Use $frontier-tech-research to study one frontier technology topic, separating technical facts, vendor claims, independent reproduction, and commercialization inference."

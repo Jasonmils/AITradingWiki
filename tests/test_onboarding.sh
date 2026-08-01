@@ -87,7 +87,13 @@ for template in \
   event.md \
   model.md \
   investment-thesis.md \
-  monitoring.md; do
+  monitoring.md \
+  concept.md \
+  trend-thesis.md \
+  technology-model.md \
+  commercialization-model.md \
+  industry-opportunity-map.md \
+  technology-monitoring.md; do
   assert_file "$TEST_VAULT/templates/$template"
 done
 
@@ -102,8 +108,11 @@ for section in \
   "## Events" \
   "## Models" \
   "## Synthesis" \
+  "## Trend Theses" \
+  "## Opportunity Maps" \
   "## Active Theses" \
-  "## Monitoring"; do
+  "## Monitoring" \
+  "## Technology Monitoring"; do
   assert_contains "$TEST_VAULT/wiki/index.md" "$section"
 done
 assert_contains "$TEST_VAULT/wiki/log.md" "# Log"

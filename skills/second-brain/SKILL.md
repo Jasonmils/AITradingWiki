@@ -1,11 +1,14 @@
 ---
 name: second-brain
-description: Set up or repair a Codex-managed Obsidian investment-research vault using the AI Trading Wiki schema. Use when the user asks to create or initialize a new investment second brain, onboard a new vault, or explicitly repair or reconfigure vault scaffolding. Do not use for ingesting sources, answering research questions, auditing an existing wiki, or building a security dossier.
+description: Set up or repair a Codex-managed Obsidian vault for AI frontier-technology learning, commercialization and industry-opportunity tracking, and evidence-grounded investment research using the AI Trading Wiki schema. Use when the user asks to create or initialize a new research second brain, onboard a new vault, or explicitly repair or reconfigure vault scaffolding. Do not use for ingesting sources, answering research questions, auditing an existing wiki, or building a security dossier.
 ---
 
-# Second Brain — Onboarding Wizard
+# Second Brain Setup
 
-Set up a new investment-research Obsidian vault using the AI Trading Wiki schema. Codex maintains the evidence-to-investment-judgment chain and Obsidian provides browsing, search, backlinks, and graph views.
+Set up a new AI frontier-technology and investment-research Obsidian vault
+using the AI Trading Wiki schema. Codex maintains the evidence-to-technology-
+to-commercialization-to-investment chain and Obsidian provides browsing,
+search, backlinks, and graph views.
 
 ## Wizard Flow
 
@@ -32,7 +35,7 @@ Accept any absolute or relative path. Resolve `~` to the user's home directory. 
 Ask:
 > "What's this knowledge base about? This helps me set up relevant tags and describe the vault's purpose."
 >
-> Examples: "global semiconductor equities", "China industrial automation stocks", "cross-market AI infrastructure"
+> Examples: "AI inference and infrastructure", "embodied AI commercialization", "cross-market AI infrastructure equities"
 
 Accept free text. Use this to:
 - Write a one-line domain description for the agent config
@@ -78,7 +81,10 @@ Run the onboarding script, passing the full vault path:
 bash <skill-directory>/scripts/onboarding.sh <vault-path>
 ```
 
-This creates `raw/`, the Source/Entity/Concept/Event/Model/Synthesis wiki directories, `templates/`, `output/`, and initial `wiki/index.md` and `wiki/log.md` files without overwriting existing content.
+This creates `raw/`, the Source/Entity/Concept/Event/Model/Synthesis wiki
+directories, technology/commercialization/investment templates, `output/`, and
+initial `wiki/index.md` and `wiki/log.md` files without overwriting existing
+content.
 
 ### 2. Generate agent config file(s)
 
@@ -129,7 +135,9 @@ Show the user:
    > Install the Obsidian Web Clipper to easily save web articles into your vault:
    > https://chromewebstore.google.com/detail/obsidian-web-clipper/cnjifjpddelmedmihgijeibhnjfabmlf
 3. **How to start** — open the vault folder in Obsidian, clip an article to `raw/`, then invoke `$second-brain-ingest`
-4. **How to research a security** — invoke `$equity-research` after relevant evidence has been ingested
+4. **How to research a technology** — invoke `$frontier-tech-research` after relevant evidence has been ingested
+5. **How to map opportunities** — invoke `$technology-to-investment` after a technology thesis is evidence-ready
+6. **How to research a security** — invoke `$equity-research` after relevant evidence has been ingested
 
 ## Reference Files
 
@@ -148,6 +156,8 @@ After setup is complete, the user's workflow is:
 
 1. **Clip articles** to `raw/` using the Obsidian Web Clipper
 2. **Ingest sources** with `$second-brain-ingest` — processes raw files into wiki pages
-3. **Ask questions** with `$second-brain-query` — searches and synthesizes from the wiki
-4. **Build a security dossier** with `$equity-research` — audits coverage, models scenarios, and evaluates tradability
-5. **Health-check** with `$second-brain-lint` — run after every 10 ingests, after earnings, or monthly
+3. **Study a frontier technology** with `$frontier-tech-research` — audits mechanisms, routes, benchmarks, maturity, and milestones
+4. **Map technology to opportunities** with `$technology-to-investment` — tests commercialization, value pools, and company exposure
+5. **Ask factual or comparison questions** with `$second-brain-query` — searches and synthesizes from the wiki
+6. **Build a security dossier** with `$equity-research` — audits coverage, models scenarios, and evaluates tradability
+7. **Health-check** with `$second-brain-lint` — run after every 10 ingests, after major technical or commercial milestones, after earnings, or monthly

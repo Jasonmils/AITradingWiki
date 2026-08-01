@@ -1,0 +1,4 @@
+baostock==0.9.3
+akshare==1.18.80
+czsc==0.10.12
+matplotlib==3.11.1

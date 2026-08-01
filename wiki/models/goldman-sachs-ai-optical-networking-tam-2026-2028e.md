@@ -15,6 +15,9 @@ tickers:
   - "NASDAQ:MRVL"
 markets:
   - US
+analysis_regimes: [us_equity]
+policy_jurisdictions: [US, CN]
+reporting_currencies: [USD]
 asset_classes:
   - equity
 industries:
@@ -29,7 +32,7 @@ as_of: 2026-04-17
 sources:
   - "[[goldman-sachs-global-tech-optical-networking-2026-04-17|高盛全球科技：光网络（2026-04-17）]]"
 created: 2026-07-24
-updated: 2026-07-24
+updated: 2026-07-28
 status: provisional
 confidence: low
 horizon: 12-24m

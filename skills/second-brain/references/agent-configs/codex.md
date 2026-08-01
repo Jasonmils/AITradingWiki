@@ -26,10 +26,14 @@ The onboarding skill should generate a file with this structure, replacing all `
 
     ## Codex Workflows
 
+    Use the canonical English Skill invocation identifiers exactly. Do not translate, re-capitalize, add spaces to, or alias them.
+
     - Use `$second-brain-ingest` to process new files from `raw/`.
     - Use `$second-brain-query` to answer from the wiki and cite pages with `[[wikilinks]]`.
     - Use `$second-brain-lint` to report structural or content-quality issues before fixing them.
-    - Use `$equity-research` to build or update one listed security's complete evidence-grounded dossier.
+    - Use `$frontier-tech-research` to study one frontier technology's mechanisms, competing routes, maturity, and milestones.
+    - Use `$technology-to-investment` to map an evidenced technology trend into commercialization, value pools, and company exposure.
+    - Use `$equity-research` to build or update one listed security's complete evidence-grounded dossier, automatically archive its non-canonical report under `output/equity-research/`, and ask before any Canonical Wiki write.
 
     {{WIKI_SCHEMA}}
 

@@ -1,11 +1,12 @@
 ---
 name: second-brain-ingest
-description: Process documents or MP4 videos from raw/ into evidence-classified Source, Entity, Concept, Event, and Model wiki updates. Use when the user asks to ingest, import, process, transcribe, summarize, or finalize storage for raw files, videos, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", "摄入财报", "处理视频", "摄入 MP4", or "视频转成 Wiki 后删除源文件". For MP4, run Video2Skill_Invest to produce a DeepSeek-refined HTML before normal ingestion, preserve the video through the Wiki approval gate, and delete it only through audited finalization after explicit curator confirmation. Present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, or a complete single-stock dossier.
+description: Process documents or MP4 videos from raw/ into evidence-classified Source, Entity, Concept, Event, and Model updates across technology, commercialization, and investment research tracks. Use when the user asks to ingest, import, process, transcribe, summarize, or finalize storage for raw files, papers, technical reports, benchmarks, product documents, videos, earnings reports, transcripts, research notes, or all unprocessed sources, including "摄入资料", "处理 raw", "摄入财报", "处理视频", "摄入 MP4", or "视频转成 Wiki 后删除源文件". For MP4, run Video2Skill_Invest to produce a DeepSeek-refined HTML before normal ingestion, preserve the video through the Wiki approval gate, and delete it only through audited finalization after explicit curator confirmation. Present 3–5 takeaways plus evidence risks before any wiki write. Do not use for ordinary wiki questions, audits, a complete frontier-topic study, or a complete single-stock dossier.
 ---
 
-# Second Brain — Ingest
+# Second Brain Ingest
 
-Convert raw evidence into selective, interlinked investment-research pages.
+Convert raw evidence into selective, interlinked technology,
+commercialization, and investment-research pages.
 
 ## Guardrails
 
@@ -41,9 +42,22 @@ Do not start Phase 1 or write the Wiki if conversion, refinement, artifact valid
 Before changing the wiki:
 
 1. Identify the source title, author or publisher, source type, publication date, covered period, and knowledge cutoff. For video, also record duration, source SHA-256, upstream revision, original transcript path, refined HTML path, and known ASR/OCR gaps.
-2. Resolve mentioned companies and securities to canonical exchange-prefixed tickers when evidence supports the mapping. Do not guess an identifier.
-3. Separate historical facts from forecasts, guidance, opinion, rumor, and inference.
-4. Classify material assertions as:
+2. Assign one or more `research_tracks`: `technology`, `commercialization`, or
+   `investment`. For papers, repositories, patents, standards, model cards,
+   benchmarks, product documents, and demos, retain the exact version,
+   revision, task, dataset, hardware, software, comparison baseline, and
+   limitations when material.
+3. Resolve mentioned laboratories, people, products, models, standards,
+   projects, companies, and securities into canonical Entities when evidence
+   supports the mapping. Do not guess an identifier.
+4. For a listed security, resolve the `primary_ticker`, `listing_regime`,
+   `analysis_regimes`, `security_type`, `issuer_domicile`,
+   `reporting_standard`, `reporting_currency`, `trading_currency`,
+   `policy_jurisdictions`, `operating_geographies`, and
+   `cross_listed_tickers` only when the evidence supports them. Keep listing,
+   domicile, operations, and policy scope separate.
+5. Separate historical facts from forecasts, guidance, opinion, rumor, and inference.
+6. Classify material assertions as:
    - `verified_fact`
    - `company_statement`
    - `source_opinion`
@@ -53,10 +67,17 @@ Before changing the wiki:
    - `model_assumption`
    - `codex_inference`
    - `disputed`
-5. Identify potential Entities, Concepts, Events, and Models.
-6. Present 3–5 key takeaways plus evidence risks, conflicts, stale dates, and missing primary support.
-7. List the pages that would be created or updated.
-8. Wait for explicit user approval before writing.
+7. Audit any claimed transition in both chains:
+   - research result → independent reproduction → prototype → pilot →
+     production deployment → scaled adoption;
+   - problem validation → demo/POC → paid pilot → order → delivery → revenue →
+     profit → FCF.
+8. Identify potential Entities, Concepts, Events, and technology,
+   commercialization, financial, or valuation Models.
+9. Present 3–5 key takeaways plus evidence risks, conflicts, stale dates,
+   benchmark mismatches, missing primary support, and unresolved routing fields.
+10. List the pages that would be created or updated.
+11. Wait for explicit user approval before writing.
 
 ## Phase 2: Selective writes
 
@@ -68,12 +89,27 @@ Create one Source page that faithfully records what the source states. Include s
 
 ### Entity and Concept
 
-Update a canonical Entity or Concept when the source adds material, reusable information. Create a new page only when the object will likely be queried again or matters to an investment thesis. Avoid aliases and near-duplicates.
+Update a canonical Entity or Concept when the source adds material, reusable
+information. Use `entity_type`, `concept_type`, and `research_tracks` when
+applicable. A non-listed technical Entity must not fabricate ticker or market
+fields. Create a new page only when the object will likely be queried again,
+changes a durable trend or opportunity map, or matters to an investment
+thesis. Avoid aliases and near-duplicates.
+
+For a listed-company Entity, populate the market-routing metadata required by
+the schema. Derive `a_share` only from `SSE:*`, `SZSE:*`, or `BJSE:*`, and
+`us_equity` only from `NASDAQ:*`, `NYSE:*`, `NYSEARCA:*`, or `AMEX:*`.
+Cross-listed issuers require explicit primary and cross-listed tickers. Do not
+infer domicile, accounting basis, security rights, or policy exposure from a
+ticker alone.
 
 ### Event
 
 Create or update an Event for dated changes such as:
 
+- research publication or independent reproduction;
+- model, product, open-source, benchmark, standard, pilot, deployment, or
+  adoption milestone;
 - earnings or guidance;
 - formal orders or deliveries;
 - technical certification;
@@ -84,9 +120,21 @@ Record announcement, expected, and effective dates separately. Preserve the diff
 
 ### Model
 
-Create or update a Model only when the source contains material forecast or valuation inputs. Put revenue, margin, expense, cash-flow, capital-expenditure, ownership, consolidation, earnings, valuation, scenario, or sensitivity assumptions here—not in Source facts.
+Create or update a Model only when the source contains material technology,
+commercialization, unit-economics, financial, forecast, or valuation inputs.
+Set `model_type`. Put scaling, cost, performance, reliability, adoption, price,
+volume, revenue, margin, expense, cash-flow, capital-expenditure, ownership,
+consolidation, earnings, valuation, scenario, or sensitivity assumptions
+here—not in Source facts.
 
-Label every forecast input as reported fact, company guidance, source opinion, or `model_assumption`. Do not silently adopt a source author's forecast as the wiki's model.
+Label every model input as observed fact, company guidance, source opinion, or
+`model_assumption`. Do not silently adopt a source author's benchmark, roadmap,
+adoption forecast, TAM, or financial forecast as the Wiki's model.
+
+For a Model spanning listed securities, populate `analysis_regimes`,
+`policy_jurisdictions`, and `reporting_currencies`. Add
+`market_rules_as_of` only when the Model makes a current market-rule or
+tradability judgment, and `fx_as_of` only when it normalizes currencies.
 
 ## Cross-link and register
 
@@ -129,12 +177,17 @@ After Phase 2, read `references/video-ingest.md` and use the bundled finalizer.
 Return:
 
 - source and knowledge cutoff;
+- research tracks, source type, and material version or benchmark boundaries;
 - pages created and updated;
 - evidence classification highlights;
+- technology maturity and commercialization-stage claims, including missing
+  transition evidence;
 - Events and Models created or changed;
 - conflicts, rumors, stale information, and missing evidence;
 - items deliberately not promoted into standalone pages.
 - MP4 storage status, retained transcript paths, and reclaimed space when
   finalization was executed.
 
-Suggest `$second-brain-query`, `$equity-research`, or `$second-brain-lint` as the appropriate next workflow.
+Suggest `$frontier-tech-research`, `$technology-to-investment`,
+`$second-brain-query`, `$equity-research`, or `$second-brain-lint` as the
+appropriate next workflow.

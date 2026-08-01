@@ -2,19 +2,20 @@
 
 [中文部署与使用指南](README.zh-CN.md)
 
-AI Trading Wiki is a Codex-native, evidence-grounded investment-research vault
-designed for browsing in Obsidian. It turns immutable text, Markdown, and PDF
-sources plus locally staged MP4 videos into linked Source, Entity, Concept,
-Event, Model, and Synthesis pages while preserving provenance and evidence
-classes.
+AI Trading Wiki is a Codex-native, evidence-grounded vault for AI frontier-
+technology learning, commercialization and industry-opportunity tracking, and
+investment research, designed for browsing in Obsidian. It turns immutable
+text, Markdown, and PDF sources plus locally staged MP4 videos into linked
+Source, Entity, Concept, Event, Model, and Synthesis pages while preserving
+provenance and evidence classes.
 
-> Evidence → Object → Mechanism → Event → Model → Investment Judgment
+> Evidence → Object → Mechanism → Technology Maturity → Commercialization → Industry Value Pool → Company Exposure → Model → Investment Judgment
 
 The repository includes all Codex skills, templates, integration scripts, and
-tests required for document ingestion, video preprocessing, wiki queries,
-quality audits, and one-security equity research. Local source files, secrets,
-model weights, caches, and generated video artifacts are intentionally excluded
-from Git.
+tests required for document ingestion, video preprocessing, frontier-
+technology research, opportunity mapping, wiki queries, quality audits, and
+one-security equity research. Local source files, secrets, model weights,
+caches, and generated video artifacts are intentionally excluded from Git.
 
 ![Second Brain Overview](docs/assets/second-brain-overview.png)
 
@@ -26,8 +27,35 @@ from Git.
 | Video ingest | MP4 with local ASR, PPT detection/OCR, diarization, and DeepSeek text refinement | `$second-brain-ingest` |
 | Wiki query | Existing knowledge, claim comparison, or multi-security questions | `$second-brain-query` |
 | Wiki audit | Links, metadata, stale claims, evidence classes, Events, Models, and Entity Hubs | `$second-brain-lint` |
+| Frontier technology study | Mechanisms, competing routes, benchmarks, maturity, bottlenecks, and milestones | `$frontier-tech-research` |
+| Technology-to-investment map | Commercialization, adoption, value pools, company exposure, and research priority | `$technology-to-investment` |
 | Equity dossier | One listed security, scenarios, valuation, thesis, and current-price tradability | `$equity-research` |
-| Vault setup | Initialize or repair a compatible investment-research vault | `$second-brain` |
+| A-share research data | Current market, announcements, events, financials, consensus, IR Q&A, and news evidence candidates | `$a-share-research-data` |
+| A-share technical audit | BaoStock/AkShare quality gates plus CZSC × chan.py monthly, weekly, and daily structure | `$a-share-technical-analysis` |
+| Vault setup | Initialize or repair a compatible frontier-technology and investment-research vault | `$second-brain` |
+
+Every delivered `$equity-research` run, including a partial or blocked one,
+automatically archives its consolidated Markdown report under
+`output/equity-research/`. The report is non-canonical; Entity, Event, Model,
+thesis, monitoring, index, and log writes still require explicit curator
+approval.
+
+## Canonical Skill Names
+
+Skill names are English-only. Use the canonical invocation exactly; do not
+translate it or create aliases.
+
+| Display name | Invocation |
+|---|---|
+| Second Brain Setup | `$second-brain` |
+| Second Brain Ingest | `$second-brain-ingest` |
+| Second Brain Query | `$second-brain-query` |
+| Second Brain Lint | `$second-brain-lint` |
+| Equity Research | `$equity-research` |
+| A-Share Research Data | `$a-share-research-data` |
+| A-Share Technical Analysis | `$a-share-technical-analysis` |
+| Frontier Tech Research | `$frontier-tech-research` |
+| Technology to Investment | `$technology-to-investment` |
 
 ## Deploy from Git
 
@@ -82,6 +110,42 @@ DEEPSEEK_API_KEY=
 Never commit or paste these values into a prompt. The video workflow processes
 the MP4, audio, and slide images locally. Only transcript text and relevant PPT
 OCR text are sent to DeepSeek after explicit curator approval.
+
+### 3. Optional: install the enhanced A-share analysis pipeline
+
+The A-share research-data workflow does not require iWenCai or an API key. It
+keeps provider failures separate from genuine empty results and treats
+third-party event, financial, consensus, and news data as discovery or
+cross-check evidence until the applicable official filing is verified.
+
+Install the isolated technical environment and pinned public chan.py revision:
+
+```bash
+bash skills/a-share-technical-analysis/scripts/setup_env.sh
+```
+
+Example read-only runs:
+
+```bash
+python3 skills/a-share-research-data/scripts/research_snapshot.py \
+  --ticker SSE:600519 --modules d1,d2,d3,d4
+
+.work/venvs/a-share-ta/bin/python \
+  skills/a-share-technical-analysis/scripts/technical_snapshot.py \
+  --ticker SSE:600519
+```
+
+The research-data and technical reports are non-canonical artifacts under
+`output/`. The technical workflow feeds the same normalized bars to CZSC and
+chan.py, preserves provisional and withdrawn structures, and never converts a
+BSP candidate into an automatic trade instruction. Each default technical run
+also writes one summary audit PNG plus pinned chan.py strict-profile monthly,
+weekly, and daily PNGs with candlesticks, Chan structures, neutral BSP markers,
+and MACD. These static, non-interactive images are recorded with SHA-256 hashes
+in the analysis manifest; `--no-native-chan-charts` keeps only the summary
+image, while `--no-audit-chart` disables all images. Lifecycle state is updated
+only from `complete` market data, after the analysis artifacts exist; the
+matching `.state-commit.json` records the final commit result.
 
 ## Ingest Sources
 
@@ -146,7 +210,7 @@ when resumable audio, frames, OCR, or timeline JSON must remain.
 ```text
 AITradingWiki/
 ├── .agents/skills/              # Relative links discovered by Codex
-├── skills/                      # Single editable source tree for five skills
+├── skills/                      # Single editable source tree for nine skills
 ├── scripts/setup_codex.sh       # Idempotent project setup
 ├── config/                      # Secret-free configuration examples
 ├── templates/                   # Canonical Wiki page templates
@@ -217,6 +281,11 @@ finish an upgrade.
 ```bash
 bash tests/test_onboarding.sh
 bash tests/test_codex_compat.sh
+bash tests/test_a_share_research_data.sh
+bash tests/test_a_share_technical_analysis.sh
+bash tests/test_frontier_research.sh
+bash tests/test_equity_research_report.sh
+bash tests/test_skill_naming.sh
 bash tests/test_video_ingest.sh
 git diff --check
 ```
@@ -254,9 +323,16 @@ Certification, orders, delivery, recognized revenue, profit, and cash flow are
 separate milestones. Industry attractiveness, research priority, and
 tradability at the current price are also separate conclusions.
 
+Research publication, independent reproduction, prototype, pilot, production
+deployment, scaled adoption, paid use, revenue, profit, and FCF are separate
+milestones. A vendor benchmark, patent, roadmap, demo, large TAM, or thematic
+association is not an automatic commercialization or security conclusion.
+
 ## Acknowledgements
 
 - [NicholasSpisak/second-brain](https://github.com/NicholasSpisak/second-brain)
 - [Jasonmils/Video2Skill_Invest](https://github.com/Jasonmils/Video2Skill_Invest)
+- [simonlin1212/a-stock-data](https://github.com/simonlin1212/a-stock-data) — endpoint catalog and adapter research
+- [Vespa314/chan.py](https://github.com/Vespa314/chan.py) — optional pinned Chan-structure audit engine
 - [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 - [Agent Skills open standard](https://agentskills.io)

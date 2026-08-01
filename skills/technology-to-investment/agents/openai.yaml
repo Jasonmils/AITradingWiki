@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technology to Investment"
+  short_description: "Map technology trends to value pools and company exposure"
+  default_prompt: "Use $technology-to-investment to map an evidenced technology trend through commercialization, industry value pools, company exposure, and follow-up security research."

@@ -1,12 +1,18 @@
 ---
 page_type: model
+model_type: financial | valuation
 subject: ""
 tags: []
 tickers: []
 markets: []
+analysis_regimes: []
+policy_jurisdictions: []
+reporting_currencies: []
 asset_classes: []
 industries: []
 themes: []
+research_tracks:
+  - investment
 as_of: YYYY-MM-DD
 sources: []
 created: YYYY-MM-DD
@@ -15,6 +21,8 @@ status: draft | provisional | active | superseded | invalidated
 confidence: low | medium | high
 horizon: 1-3m | 6-12m | 12-24m | 3-5y
 review_after: YYYY-MM-DD
+market_rules_as_of:
+fx_as_of:
 base_currency: ""
 units: ""
 ---
@@ -22,6 +30,16 @@ units: ""
 # 模型标题
 
 ## 目的与范围
+
+## 市场路由与口径统一
+
+| 证券 | Listing Regime | Reporting Standard | 报告币种 | 交易币种 | 财政期间 | 股类/ADR 比例 | 市场规则截止日 |
+|---|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |  |
+
+- 应用 Profile：
+- FX 来源与截止日：
+- 未完成的跨市场口径调整：
 
 ## 历史输入
 
@@ -76,6 +94,10 @@ units: ""
 | 保守 |  |  |  |  |  |
 | 基准 |  |  |  |  |  |
 | 乐观 |  |  |  |  |  |
+
+## 分市场估值与可交易性
+
+分别输出 A 股、美股或其他上市证券的估值与可交易性；不得把一个市场的政策、流动性、期权或 short-interest 信号直接迁移到另一个市场。
 
 ## 情景与敏感性分析
 

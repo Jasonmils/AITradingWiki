@@ -1,4 +1,4 @@
 interface:
   display_name: "Second Brain Ingest"
-  short_description: "Ingest evidence and finalize MP4 storage safely"
-  default_prompt: "Use $second-brain-ingest to preview and ingest a raw document or MP4, then safely finalize confirmed video storage."
+  short_description: "Ingest evidence and safely finalize MP4 source storage"
+  default_prompt: "Use $second-brain-ingest to preview and ingest a raw source, waiting for approval before canonical writes or MP4 finalization."

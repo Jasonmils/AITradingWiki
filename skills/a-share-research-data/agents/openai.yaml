@@ -1,0 +1,4 @@
+interface:
+  display_name: "A-Share Research Data"
+  short_description: "Retrieve provenance-rich current A-share research data"
+  default_prompt: "Use $a-share-research-data to retrieve a read-only, provenance-rich current research snapshot for one canonical A-share security."

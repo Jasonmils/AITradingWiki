@@ -1,0 +1,4 @@
+interface:
+  display_name: "A-Share Technical Analysis"
+  short_description: "Audit A-share structure across monthly weekly and daily bars"
+  default_prompt: "Use $a-share-technical-analysis to generate an evidence-aware monthly, weekly, and daily dual-engine technical snapshot for one A-share security."

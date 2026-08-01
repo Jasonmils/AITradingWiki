@@ -35,6 +35,10 @@ SKILLS=(
   second-brain-query
   second-brain-lint
   equity-research
+  a-share-research-data
+  a-share-technical-analysis
+  frontier-tech-research
+  technology-to-investment
 )
 
 TEMPLATES=(
@@ -44,6 +48,12 @@ TEMPLATES=(
   model.md
   investment-thesis.md
   monitoring.md
+  concept.md
+  trend-thesis.md
+  technology-model.md
+  commercialization-model.md
+  industry-opportunity-map.md
+  technology-monitoring.md
 )
 
 INDEX_BEFORE="$(file_digest "$REPO_ROOT/wiki/index.md")"
@@ -101,6 +111,27 @@ grep -Fq "## 跟踪面板" "$REPO_ROOT/templates/monitoring.md" \
   && grep -Fq "## 下次复核" "$REPO_ROOT/templates/monitoring.md" \
   && pass "Monitoring template contains indicators and next review" \
   || fail "Monitoring template is missing required sections"
+grep -Fq "concept_type:" "$REPO_ROOT/templates/concept.md" \
+  && grep -Fq "## 竞争或替代路线" "$REPO_ROOT/templates/concept.md" \
+  && pass "Concept template covers technical route comparison" \
+  || fail "Concept template is missing technical route comparison"
+grep -Fq "synthesis_type: trend_thesis" "$REPO_ROOT/templates/trend-thesis.md" \
+  && grep -Fq "technology_maturity:" "$REPO_ROOT/templates/trend-thesis.md" \
+  && grep -Fq "## 关键未知项" "$REPO_ROOT/templates/trend-thesis.md" \
+  && pass "Trend thesis template preserves maturity and unknowns" \
+  || fail "Trend thesis template is missing maturity or unknowns"
+grep -Fq "model_type: technology_trend" "$REPO_ROOT/templates/technology-model.md" \
+  && grep -Fq "## Benchmark 归一化与复现状态" "$REPO_ROOT/templates/technology-model.md" \
+  && pass "Technology model template preserves benchmark normalization" \
+  || fail "Technology model template is missing benchmark normalization"
+grep -Fq "commercialization_stage:" "$REPO_ROOT/templates/commercialization-model.md" \
+  && grep -Fq "## 从 POC 到规模采用的漏斗" "$REPO_ROOT/templates/commercialization-model.md" \
+  && pass "Commercialization template preserves stage gates" \
+  || fail "Commercialization template is missing stage gates"
+grep -Fq "synthesis_type: opportunity_map" "$REPO_ROOT/templates/industry-opportunity-map.md" \
+  && grep -Fq "直接/间接/可选/伪相关" "$REPO_ROOT/templates/industry-opportunity-map.md" \
+  && pass "Opportunity map separates exposure classes" \
+  || fail "Opportunity map is missing exposure classes"
 
 for skill in "${SKILLS[@]}"; do
   source_dir="$REPO_ROOT/skills/$skill"
@@ -183,10 +214,82 @@ grep -Fq "active" "$REPO_ROOT/skills/second-brain-lint/SKILL.md" \
   || fail "lint is missing the upgraded workflow"
 
 grep -Fq "three-scenario Model" "$REPO_ROOT/skills/equity-research/SKILL.md" \
-  && grep -Fq "Ask the user" "$REPO_ROOT/skills/equity-research/SKILL.md" \
+  && grep -Fq 'output/equity-research/' "$REPO_ROOT/skills/equity-research/SKILL.md" \
+  && grep -Fq 'Ask before any Canonical Wiki write' "$REPO_ROOT/skills/equity-research/SKILL.md" \
   && grep -Fq "tradable at the current price" "$REPO_ROOT/skills/equity-research/SKILL.md" \
-  && pass "equity-research is discoverable and enforces save/currentness gates" \
+  && pass "equity-research enforces report archive, Canonical approval, and currentness gates" \
   || fail "equity-research is missing a required gate"
+
+grep -Fq "independent reproduction" "$REPO_ROOT/skills/frontier-tech-research/SKILL.md" \
+  && grep -Fq "Normalize technical comparisons" "$REPO_ROOT/skills/frontier-tech-research/SKILL.md" \
+  && grep -Fq "wait for explicit curator approval" "$REPO_ROOT/skills/frontier-tech-research/SKILL.md" \
+  && pass "frontier-tech-research preserves benchmark, maturity, and save gates" \
+  || fail "frontier-tech-research is missing a required research gate"
+
+grep -Fq "Problem validation" "$REPO_ROOT/skills/technology-to-investment/SKILL.md" \
+  && grep -Fq "value creation from value capture" "$REPO_ROOT/skills/technology-to-investment/SKILL.md" \
+  && grep -Fq 'Route a complete one-security dossier' "$REPO_ROOT/skills/technology-to-investment/SKILL.md" \
+  && pass "technology-to-investment preserves commercialization and security boundaries" \
+  || fail "technology-to-investment is missing a required opportunity gate"
+
+grep -Fq "CNINFO" "$REPO_ROOT/skills/a-share-research-data/SKILL.md" \
+  && grep -Fq "read-only" "$REPO_ROOT/skills/a-share-research-data/SKILL.md" \
+  && grep -Fq "result_status=empty" "$REPO_ROOT/skills/a-share-research-data/references/data-contract.md" \
+  && grep -Fq "raw_response_sha256" "$REPO_ROOT/skills/a-share-research-data/references/data-contract.md" \
+  && pass "A-share research-data skill preserves official-first provenance and empty/error separation" \
+  || fail "A-share research-data skill is missing a required evidence contract"
+
+grep -Fq "BaoStock" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq "AkShare" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq "CZSC" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq "chan.py" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq "BSP" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq "monthly" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq "native_chan_charts" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && grep -Fq -- "--no-native-chan-charts" "$REPO_ROOT/skills/a-share-technical-analysis/SKILL.md" \
+  && pass "A-share technical skill preserves providers, dual engines, BSP boundaries, multi-timeframe roles, and native charts" \
+  || fail "A-share technical skill is missing a provider, engine, BSP, timeframe, or native-chart contract"
+
+for requirement in baostock==0.9.3 akshare==1.18.80 czsc==0.10.12; do
+  grep -Fxq "$requirement" "$REPO_ROOT/skills/a-share-technical-analysis/requirements.txt" \
+    && pass "A-share technical dependency is pinned: $requirement" \
+    || fail "A-share technical dependency is not pinned: $requirement"
+done
+
+grep -Fq '${VENV_DIR}；chan.py=${CHAN_COMMIT}' \
+  "$REPO_ROOT/skills/a-share-technical-analysis/scripts/setup_env.sh" \
+  && pass "A-share technical setup braces variables before non-ASCII punctuation" \
+  || fail "A-share technical setup may parse a variable across non-ASCII punctuation"
+
+grep -Fq '$a-share-research-data' "$REPO_ROOT/skills/second-brain-query/SKILL.md" \
+  && grep -Fq '$a-share-research-data' "$REPO_ROOT/skills/equity-research/SKILL.md" \
+  && grep -Fq '$a-share-technical-analysis' "$REPO_ROOT/skills/second-brain-query/SKILL.md" \
+  && grep -Fq '$a-share-technical-analysis' "$REPO_ROOT/skills/equity-research/SKILL.md" \
+  && pass "query and equity-research route A-share research data and technical analysis" \
+  || fail "A-share research-data or technical routing is missing"
+
+for field in technical_as_of data_providers adjustment technical_engine technical_engines \
+  technical_config_hashes data_quality_status engine_consistency_status overall_technical_status \
+  technical_state_receipt technical_state_sha256; do
+  grep -Fq "$field" "$REPO_ROOT/skills/second-brain/references/wiki-schema.md" \
+    && pass "schema defines optional technical field $field" \
+    || fail "schema is missing technical field $field"
+done
+
+for field in research_tracks entity_type concept_type model_type synthesis_type \
+  technology_horizon technology_maturity commercialization_stage; do
+  grep -Fq "$field" "$REPO_ROOT/skills/second-brain/references/wiki-schema.md" \
+    && grep -Fq "$field" "$REPO_ROOT/AGENTS.md" \
+    && pass "frontier research field is defined: $field" \
+    || fail "frontier research field is missing: $field"
+done
+
+grep -Fq '$frontier-tech-research' "$REPO_ROOT/skills/second-brain-query/SKILL.md" \
+  && grep -Fq '$technology-to-investment' "$REPO_ROOT/skills/second-brain-query/SKILL.md" \
+  && grep -Fq '$frontier-tech-research' "$REPO_ROOT/skills/second-brain-ingest/SKILL.md" \
+  && grep -Fq '$technology-to-investment' "$REPO_ROOT/skills/second-brain-ingest/SKILL.md" \
+  && pass "query and ingest route frontier technology and opportunity workflows" \
+  || fail "frontier technology workflow routing is incomplete"
 
 if git -C "$REPO_ROOT" check-ignore -q --no-index "skills/equity-research/SKILL.md"; then
   fail "skills/ is ignored by .gitignore"
@@ -222,6 +325,48 @@ if git -C "$REPO_ROOT" check-ignore -q --no-index "output/video-ingest/timeline.
   pass "generated output files are ignored"
 else
   fail "generated output files are not ignored"
+fi
+
+if git -C "$REPO_ROOT" check-ignore -q --no-index "output/equity-research/sse-600519-report.md"; then
+  pass "non-canonical equity-research reports are ignored"
+else
+  fail "non-canonical equity-research reports are not ignored"
+fi
+
+if bash "$REPO_ROOT/tests/test_market_routing.sh" >/dev/null; then
+  pass "market-aware A-share, U.S.-equity, and cross-market routing passes"
+else
+  fail "market-aware routing test failed"
+fi
+
+if bash "$REPO_ROOT/tests/test_a_share_research_data.sh" >/dev/null; then
+  pass "offline A-share research-data contracts and CLI tests pass"
+else
+  fail "offline A-share research-data tests failed"
+fi
+
+if bash "$REPO_ROOT/tests/test_a_share_technical_analysis.sh" >/dev/null; then
+  pass "offline A-share provider, quality-gate, CZSC, chan.py, and report tests pass"
+else
+  fail "offline A-share technical-analysis tests failed"
+fi
+
+if bash "$REPO_ROOT/tests/test_frontier_research.sh" >/dev/null; then
+  pass "frontier technology, commercialization, and opportunity contracts pass"
+else
+  fail "frontier research contract test failed"
+fi
+
+if bash "$REPO_ROOT/tests/test_equity_research_report.sh" >/dev/null; then
+  pass "equity-research automatically archives non-canonical reports safely"
+else
+  fail "equity-research report archive test failed"
+fi
+
+if bash "$REPO_ROOT/tests/test_skill_naming.sh" >/dev/null; then
+  pass "Skill display names and workflow invocations use canonical English names"
+else
+  fail "Skill naming consistency test failed"
 fi
 
 echo "=== Results: $PASS passed, $FAIL failed ==="

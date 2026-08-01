@@ -39,6 +39,7 @@ printf '%s\n' \
   'printf '\''%s\n'\'' '\''{"source":{},"slides":[]}'\'' > "$OUT/timeline.json"' \
   'printf '\''%s\n'\'' '\''<html>original</html>'\'' > "$OUT/timeline.html"' \
   'printf '\''%s\n'\'' '\''<html>refined</html>'\'' > "$OUT/timeline.deepseek.html"' \
+  'printf '\''%s\n'\'' '\''library notice before JSON'\''' \
   'printf '\''{"production_job_id":"fake","status":"succeeded","stage":"render","refinement_status":"completed","artifacts":{"timeline_json":"%s","timeline_html":"%s","timeline_deepseek_html":"%s"}}\n'\'' "$OUT/timeline.json" "$OUT/timeline.html" "$OUT/timeline.deepseek.html"' \
   > "$TOOL/.venv/bin/python"
 chmod +x "$TOOL/.venv/bin/python"

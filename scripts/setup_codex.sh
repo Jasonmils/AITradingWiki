@@ -12,6 +12,10 @@ SKILLS=(
   second-brain-query
   second-brain-lint
   equity-research
+  a-share-research-data
+  a-share-technical-analysis
+  frontier-tech-research
+  technology-to-investment
 )
 
 mkdir -p "$SKILL_TARGET"

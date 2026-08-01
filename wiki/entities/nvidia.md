@@ -13,6 +13,17 @@ tickers:
   - "NASDAQ:NVDA"
 ticker_aliases:
   - NVDA
+primary_ticker: "NASDAQ:NVDA"
+listing_regime: us_equity
+analysis_regimes: [us_equity]
+security_type: common_stock
+issuer_domicile: US
+reporting_standard: US_GAAP
+reporting_currency: USD
+trading_currency: USD
+policy_jurisdictions: [US, CN]
+operating_geographies: [US, CN, Global]
+cross_listed_tickers: []
 markets:
   - US
 asset_classes:
@@ -24,12 +35,16 @@ themes:
   - AI infrastructure
   - optical networking
   - co-packaged optics
-as_of: 2026-07-24
+as_of: 2026-05-31
 sources:
+  - "[[nvidia-q1-fy2027-official-source-pack|NVIDIA Q1 FY2027 官方披露资料包]]"
   - "[[goldman-sachs-global-tech-optical-networking-2026-04-17|高盛全球科技：光网络（2026-04-17）]]"
+  - "[[nvidia-spectrum-x-photonics-cpo-launch-2025-03-18|NVIDIA Spectrum-X 与 Quantum-X Photonics CPO 发布（2025-03-18）]]"
+  - "[[nvidia-spectrum-x-photonics-production-2026-05-31|NVIDIA Spectrum-X Photonics 进入生产（2026-05-31）]]"
+  - "[[coherent-nvidia-strategic-partnership-2026-03-02|NVIDIA 与 Coherent 战略合作（2026-03-02）]]"
   - "https://investor.nvidia.com/investor-resources/faqs/default.aspx"
 created: 2026-07-24
-updated: 2026-07-24
+updated: 2026-07-28
 ---
 
 # NVIDIA Corporation（英伟达）
@@ -45,11 +60,13 @@ updated: 2026-07-24
 
 ## 当前状态
 
-之所以选择性创建本页，是因为 NVIDIA 的机架架构、网络芯片和 CPO 路线图构成[[goldman-sachs-ai-optical-networking-tam-2026-2028e|高盛 AI 光网络 TAM 与 CPO 渗透模型（2026–2028E）]]的主要需求和配置假设。本页不是完整的公司研究档案。
+NVIDIA 的 accelerator、机架、交换、NIC 和 CPO 路线决定大量供应链需求。Q1 FY2027 收入 US$81.615bn，Data Center 收入 US$75.2bn；2026-05-31 公司又称 Spectrum-X Ethernet Photonics 已进入生产。财务增长与平台推进均已验证，但不代表各供应链伙伴已按固定份额确认收入。
 
 ## 业务板块
 
-本来源未评估。
+- Q1 FY2027 起公司采用新的报告框架，把 Data Center 进一步拆分为 Hyperscale 与 Accelerated Computing Infrastructure & Enterprise 等类别。
+- 旧框架下 Q1 Data Center Compute 为 US$60.4bn，Networking 为 US$14.8bn。
+- 新旧口径需要保留桥接，不能直接拼接未经重述的序列。
 
 ## 所有权与治理
 
@@ -57,45 +74,60 @@ updated: 2026-07-24
 
 ## 产品与技术
 
-报告讨论了 GB300 NVL72、Vera Rubin NVL72、Rubin Ultra NVL144/NVL576、Quantum-X Photonics 和 Spectrum-X Photonics。产品规格、出货时间和采用率假设来自公司数据、供应链调研及高盛推断；在核对一手产品文件前，分别保留为 `company_statement`、`source_opinion` 或 `model_assumption`。
+- 2025-03-18 发布 Quantum-X 与 Spectrum-X Photonics CPO。
+- 2026-05-31 表示 Spectrum-X Ethernet Photonics 已进入生产。
+- Vera Rubin 在 Q1 FY2027 材料中仍是公司路线图陈述；`on track` 不等于交付或收入。
+- 高盛 2026E–2028E 机架出货、CPO 渗透率与 BoM 仍是第三方 `model_assumption`。
 
 ## 客户、供应商与价值链
 
-报告将 NVIDIA 视为平台方，其机架、交换机和 NIC 架构会影响光模块、铜连接、PCB、光引擎、ELS 及光纤/MPO 的需求。供应商身份和商业关系尚未独立核验。
+公司公告列出 Coherent、Fabrinet、Lumentum、天孚通信等 CPO 生态伙伴，并把中际旭创列入可插拔光学生态。生态身份不等于独家供货、份额或收入。
 
 ## 财务概况
 
-本次未摄入 NVIDIA 的历史财务报表、分部勾稽、现金流分析、估值或目标价。
+- Q1 FY2027 收入 US$81.615bn，同比增长 85%；Data Center 收入 US$75.2bn，同比增长 92%。
+- GAAP 毛利率 74.9%；同比改善很大程度来自上年 H20 相关 US$4.5bn 费用不再重复。
+- Q2 收入指引 US$91bn ±2%，未假设中国数据中心计算收入。
+- FY2027 起 non-GAAP 不再剔除 SBC；历史数字虽重述，仍需显式标记口径变化。
+- 本页未核验当前价格或完成公司整体估值。
 
 ## 研究覆盖
 
 | 研究模块 | 状态 | 截止日 | 主要缺口 |
 |---|---|---|---|
-| 公司与证券 | partial | 2026-07-24 | 已核验证券代码；尚未摄入完整法律与上市文件 |
+| 公司与证券 | complete | 2026-05-31 |  |
 | 所有权与治理 | unverified | 2026-07-24 | 缺少一手治理资料 |
-| 业务板块 | unverified | 2026-07-24 | 来源未覆盖 |
-| 行业与竞争 | partial | 2026-04-17 | 仅有单份卖方报告的光网络背景 |
-| 产品与技术 | partial | 2026-04-17 | 产品路线和架构需要一手核验 |
-| 客户与供应商 | unverified | 2026-04-17 | 供应链调研底稿未披露 |
-| 历史财务 | unverified | 2026-07-24 | 未摄入监管申报文件 |
-| 财务模型 | provisional | 2026-04-17 | 仅有第三方机架/TAM 假设 |
-| 估值 | unverified | 2026-07-24 | 无当前估值 |
-| 投资论点 | unverified | 2026-07-24 | 未创建投资论点 |
+| 业务板块 | complete | 2026-04-26 | 新旧报告框架需持续桥接 |
+| 行业与竞争 | partial | 2026-05-31 | accelerator 份额、价格与客户部署 |
+| 产品与技术 | complete | 2026-05-31 | 现场规模与可靠性 |
+| 客户与供应商 | partial | 2026-03-18 | 份额和商业条款 |
+| 历史财务 | complete | 2026-04-26 | 正常化毛利率与口径变更 |
+| 财务模型 | provisional | 2026-07-28 | 供应链利润率正常化和收入桥 |
+| 估值 | unverified | 2026-07-28 | 当前价格未可靠复核 |
+| 投资论点 | partial | 2026-07-28 | CPO 与整体 AI 平台仍需统一估值 |
 
 ## 关联事件
 
 - [[cpo-switch-commercialization-roadmap-2025-2027|CPO 交换机商业化路线图（2025–2027）]]
+- [[nvidia-q1-fy2027-results-2026-05-20|NVIDIA Q1 FY2027 业绩与披露口径变更]]
 
 ## 关联模型
 
 - [[goldman-sachs-ai-optical-networking-tam-2026-2028e|高盛 AI 光网络 TAM 与 CPO 渗透模型（2026–2028E）]]
+- [[cpo-industry-volume-value-model-2026-2031|CPO 行业量价与价值池模型（2026–2031）]]
+- [[ai-supply-chain-normalized-margin-scenarios-2026-2028|AI 算力供应链正常化利润率情景（2026–2028）]]
 
 ## 关联综合研究
 
-暂无。
+- [[cpo-company-comparison-consensus-and-non-consensus-2026|CPO 公司比较：共识、非共识与估值边界（2026）]]
+- [[cloud-and-compute-supply-chain-comparison-2026|云厂商与算力供应链比较（2026）]]
 
 ## 证据缺口与冲突
 
 - 报告中的 2026E–2028E 机架出货量和 25%–29% CPO 渗透率属于高盛假设，并非公司指引。
-- 产品发布、可用性、客户认证、订单、交付和收入确认必须作为独立里程碑分别核验。
+- `in production`、客户部署、供应商交付和供应商收入必须作为独立里程碑核验。
+- 生态名单不支持假设独家关系或固定份额。
+- Data Center 同时包含 compute 和 networking，不能当作纯 GPU 收入。
+- 毛利率同比含 H20 费用基数，产品路线图与实际收入需分层。
+- 中国出口限制、先进封装、HBM、代工和客户集中度是独立风险变量。
 - 当前证据不支持任何现价可交易性结论。
